@@ -1,11 +1,11 @@
 import { CheckSquare, Play, TrendingUp, Users, Settings, Moon } from "lucide-react"
 
 const navigationItems = [
-  { id: "tasks", label: "Todo List", icon: CheckSquare, description: "Daily task management" },
-  { id: "player", label: "Prayer Tracker", icon: Play, description: "Track your daily prayers" },
-  { id: "growth", label: "Growth Score", icon: TrendingUp, description: "Iman & Life development" },
-  { id: "contacts", label: "Urgent Contacts", icon: Users, description: "Quick access contacts" },
-  { id: "settings", label: "Settings", icon: Settings, description: "App preferences" },
+  { id: "tasks", label: "কাজের তালিকা", icon: CheckSquare, description: "দৈনিক কাজ পরিচালনা" },
+  { id: "player", label: "নামাজ ট্র্যাকার", icon: Play, description: "আপনার দৈনিক নামাজ ট্র্যাক করুন" },
+  { id: "growth", label: "উন্নতির স্কোর", icon: TrendingUp, description: "ঈমান ও জীবনের উন্নয়ন" },
+  { id: "contacts", label: "জরুরি যোগাযোগ", icon: Users, description: "দ্রুত যোগাযোগের তালিকা" },
+  { id: "settings", label: "সেটিংস", icon: Settings, description: "অ্যাপের পছন্দসমূহ" },
 ]
 
 export default function SideNavigation({ activeTab, setActiveTab }) {
@@ -17,7 +17,7 @@ export default function SideNavigation({ activeTab, setActiveTab }) {
           <div className="flex items-center gap-3 mb-2">
             <img
               src="/logo.png"
-              alt="Muhasaba Logo"
+              alt="মুহাসাবা লোগো"
               className="w-8 h-8 object-contain"
               onError={(e) => {
                 // Fallback to Moon icon if logo fails to load
@@ -27,10 +27,10 @@ export default function SideNavigation({ activeTab, setActiveTab }) {
             />
             <Moon className="text-green-600 hidden" size={28} />
             <h1 className="text-2xl font-bold text-gray-800">
-              Muhasaba
+              মুহাসাবা
             </h1>
           </div>
-          <p className="text-sm text-gray-600">Islamic Lifestyle Tracker</p>
+          <p className="text-sm text-gray-600">ইসলামিক জীবনযাত্রা ট্র্যাকার</p>
         </div>
 
         {/* Navigation Items */}
@@ -65,7 +65,7 @@ export default function SideNavigation({ activeTab, setActiveTab }) {
         <div className="absolute bottom-6 left-6 right-6">
           <div className="text-xs text-gray-500 text-center">
             <p>v1.0.0</p>
-            <p className="mt-1">Built with ❤️ for Muslims</p>
+            <p className="mt-1">মুসলিমদের জন্য ❤️ দিয়ে তৈরি</p>
           </div>
         </div>
       </div>

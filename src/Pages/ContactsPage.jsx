@@ -56,7 +56,7 @@ const ContactsPage = () => {
       }
     } catch (error) {
       console.error('Error loading contacts from Firestore:', error)
-      toast.error('Failed to load contacts. Please refresh the page.')
+      toast.error('যোগাযোগ লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)
     }
@@ -140,7 +140,7 @@ const ContactsPage = () => {
         {contacts.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Icon size={48} className="mx-auto mb-4 opacity-50" />
-            <p className="text-sm">No contacts added yet</p>
+            <p className="text-sm">এখনো কোন যোগাযোগ যোগ করা হয়নি</p>
           </div>
         ) : (
           contacts.map(contact => (
@@ -172,7 +172,7 @@ const ContactsPage = () => {
       <div className="max-w-6xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your contacts...</p>
+          <p className="text-gray-600">আপনার যোগাযোগ লোড হচ্ছে...</p>
         </div>
       </div>
     )
@@ -181,12 +181,12 @@ const ContactsPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
       <div className="text-center mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Urgent Contacts</h1>
-        <p className="text-gray-600 text-sm md:text-base">Quick access to important people</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">জরুরি যোগাযোগ</h1>
+        <p className="text-gray-600 text-sm md:text-base">গুরুত্বপূর্ণ ব্যক্তিদের দ্রুত অ্যাক্সেস</p>
         {syncing && (
           <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mt-2">
             <div className="animate-spin rounded-full h-3 w-3 border-b border-gray-400"></div>
-            <span>Syncing...</span>
+            <span>সিঙ্ক হচ্ছে...</span>
           </div>
         )}
       </div>
@@ -203,7 +203,7 @@ const ContactsPage = () => {
             }`}
           >
             <MessageCircle size={20} className="inline mr-2" />
-            Message Contacts
+            মেসেজ যোগাযোগ
           </button>
           <button
             onClick={() => setActiveSection('call')}
@@ -214,7 +214,7 @@ const ContactsPage = () => {
             }`}
           >
             <Phone size={20} className="inline mr-2" />
-            Call Contacts
+            কল যোগাযোগ
           </button>
         </div>
         
@@ -223,7 +223,7 @@ const ContactsPage = () => {
             type="text"
             value={newContact}
             onChange={(e) => setNewContact(e.target.value)}
-            placeholder={`Add ${activeSection === 'message' ? 'message' : 'call'} contact...`}
+            placeholder={`${activeSection === 'message' ? 'মেসেজ' : 'কল'} যোগাযোগ যোগ করুন...`}
             className={`flex-1 px-4 py-3 border-2 bg-white rounded-lg focus:outline-none text-sm md:text-base transition-all ${
               activeSection === 'message' 
                 ? 'border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 text-green-700 placeholder-green-400' 
@@ -240,7 +240,7 @@ const ContactsPage = () => {
             }`}
           >
             <Plus size={20} />
-            <span className="hidden md:inline">Add Contact</span>
+            <span className="hidden md:inline">যোগাযোগ যোগ করুন</span>
           </button>
         </div>
       </div>
@@ -248,7 +248,7 @@ const ContactsPage = () => {
       {/* Contact Lists */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ContactSection
-          title="Person that needs to be messaged"
+          title="যাদের মেসেজ করতে হবে"
           contacts={contacts.message}
           type="message"
           icon={MessageCircle}
@@ -256,7 +256,7 @@ const ContactsPage = () => {
         />
         
         <ContactSection
-          title="Person that needs to be called"
+          title="যাদের কল করতে হবে"
           contacts={contacts.call}
           type="call"
           icon={Phone}

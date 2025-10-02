@@ -14,7 +14,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
     e.preventDefault();
     
     if (!email || !password) {
-      toast.error('Please fill in all fields');
+      toast.error('দয়া করে সব ক্ষেত্র পূরণ করুন');
       return;
     }
 
@@ -24,20 +24,20 @@ const LoginPage = ({ onSwitchToSignup }) => {
       await trackActivity('user_login', { method: 'email' });
     } catch (error) {
       console.error('Login error:', error);
-      let errorMessage = 'Failed to log in';
+      let errorMessage = 'লগ ইন করতে ব্যর্থ';
       
       switch (error.code) {
         case 'auth/user-not-found':
-          errorMessage = 'No account found with this email';
+          errorMessage = 'এই ইমেইলের সাথে কোন অ্যাকাউন্ট পাওয়া যায়নি';
           break;
         case 'auth/wrong-password':
-          errorMessage = 'Incorrect password';
+          errorMessage = 'ভুল পাসওয়ার্ড';
           break;
         case 'auth/invalid-email':
-          errorMessage = 'Invalid email address';
+          errorMessage = 'অবৈধ ইমেইল ঠিকানা';
           break;
         case 'auth/too-many-requests':
-          errorMessage = 'Too many failed attempts. Please try again later';
+          errorMessage = 'অনেক ব্যর্থ প্রচেষ্টা। দয়া করে পরে আবার চেষ্টা করুন';
           break;
         default:
           errorMessage = error.message;
@@ -53,8 +53,8 @@ const LoginPage = ({ onSwitchToSignup }) => {
     <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-sm w-full bg-white rounded-xl shadow-lg p-6 mx-auto">
         <div className="text-center mb-4">
-          <h1 className="text-xl font-bold text-gray-900 mb-1">Welcome Back</h1>
-          <p className="text-sm text-gray-600">Sign in to continue</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-1">স্বাগতম</h1>
+          <p className="text-sm text-gray-600">চালিয়ে যেতে সাইন ইন করুন</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -65,7 +65,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              placeholder="Email address"
+              placeholder="ইমেইল ঠিকানা"
               required
             />
           </div>
@@ -77,7 +77,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              placeholder="Password"
+              placeholder="পাসওয়ার্ড"
               required
             />
             <button
@@ -99,7 +99,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
             ) : (
               <>
                 <LogIn className="w-4 h-4" />
-                <span>Sign In</span>
+                <span>সাইন ইন</span>
               </>
             )}
           </button>
@@ -107,12 +107,12 @@ const LoginPage = ({ onSwitchToSignup }) => {
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
+            কোন অ্যাকাউন্ট নেই?{' '}
             <button
               onClick={onSwitchToSignup}
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
-              Sign up here
+              এখানে সাইন আপ করুন
             </button>
           </p>
         </div>

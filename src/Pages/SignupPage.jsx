@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, Mail, Lock, User, UserPlus, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, UserPlus } from 'lucide-react';
 import { toast } from 'react-toastify';
 import FirebaseSetupGuide from '../components/FirebaseSetupGuide';
 
 const SignupPage = ({ onSwitchToLogin }) => {
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
@@ -26,48 +25,34 @@ const SignupPage = ({ onSwitchToLogin }) => {
     });
   };
 
-  const validateStep1 = () => {
+  const validateForm = () => {
     if (!formData.displayName.trim()) {
-      toast.error('Please enter your name');
+      toast.error('দয়া করে আপনার নাম লিখুন');
       return false;
     }
     
     if (!formData.email) {
-      toast.error('Please enter your email');
+      toast.error('দয়া করে আপনার ইমেইল লিখুন');
       return false;
     }
-    
-    return true;
-  };
 
-  const validateStep2 = () => {
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে');
       return false;
     }
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('পাসওয়ার্ড মিলছে না');
       return false;
     }
     
     return true;
-  };
-
-  const handleNext = () => {
-    if (validateStep1()) {
-      setStep(2);
-    }
-  };
-
-  const handleBack = () => {
-    setStep(1);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateStep2()) return;
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
@@ -96,17 +81,17 @@ const SignupPage = ({ onSwitchToLogin }) => {
         return;
       }
       
-      let errorMessage = 'Failed to create account';
+      let errorMessage = 'অ্যাকাউন্ট তৈরি করতে ব্যর্থ';
       
       switch (error.code) {
         case 'auth/email-already-in-use':
-          errorMessage = 'An account with this email already exists';
+          errorMessage = 'এই ইমেইলের সাথে ইতিমধ্যে একটি অ্যাকাউন্ট আছে';
           break;
         case 'auth/invalid-email':
-          errorMessage = 'Invalid email address';
+          errorMessage = 'অবৈধ ইমেইল ঠিকানা';
           break;
         case 'auth/weak-password':
-          errorMessage = 'Password is too weak';
+          errorMessage = 'পাসওয়ার্ড খুবই দুর্বল';
           break;
         default:
           errorMessage = error.message;
@@ -130,9 +115,9 @@ const SignupPage = ({ onSwitchToLogin }) => {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <UserPlus className="w-8 h-8 text-green-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Account Created!</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">অ্যাকাউন্ট তৈরি হয়েছে!</h3>
             <p className="text-gray-600 text-sm mb-4">
-              Redirecting you to sign in with your new account...
+              আপনার নতুন অ্যাকাউন্ট দিয়ে সাইন ইন করতে রিডাইরেক্ট করা হচ্ছে...
             </p>
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
@@ -144,139 +129,113 @@ const SignupPage = ({ onSwitchToLogin }) => {
       <div className="h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
       <div className="max-w-sm w-full bg-white rounded-xl shadow-lg p-6 mx-auto">
         <div className="text-center mb-4">
-          <h1 className="text-xl font-bold text-gray-900 mb-1">Create Account</h1>
-          <p className="text-sm text-gray-600">Step {step} of 2</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-1">অ্যাকাউন্ট তৈরি করুন</h1>
+          <p className="text-sm text-gray-600">সব তথ্য পূরণ করুন</p>
         </div>
 
-        {step === 1 ? (
-          // Step 1: Basic Info
-          <div className="space-y-4">
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                name="displayName"
-                value={formData.displayName}
-                onChange={handleChange}
-                className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                placeholder="Full name"
-                required
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              name="displayName"
+              value={formData.displayName}
+              onChange={handleChange}
+              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              placeholder="পূর্ণ নাম"
+              required
+            />
+          </div>
 
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                placeholder="Email address"
-                required
-              />
-            </div>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              placeholder="ইমেইল ঠিকানা"
+              required
+            />
+          </div>
 
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              placeholder="পাসওয়ার্ড তৈরি করুন"
+              required
+            />
             <button
               type="button"
-              onClick={handleNext}
-              className="w-full bg-green-600 text-white py-2.5 px-4 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center space-x-2 text-sm font-medium mt-6"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              <span>Continue</span>
-              <ArrowRight className="w-4 h-4" />
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
-
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                Already have an account?{' '}
-                <button
-                  onClick={onSwitchToLogin}
-                  className="text-green-600 hover:text-green-700 font-medium"
-                >
-                  Sign in here
-                </button>
-              </p>
-            </div>
           </div>
-        ) : (
-          // Step 2: Password
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                placeholder="Create password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
 
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                placeholder="Confirm password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              placeholder="পাসওয়ার্ড নিশ্চিত করুন"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
 
-            <div className="flex space-x-3 mt-6">
+          <button
+            type="submit"
+            disabled={loading || redirecting}
+            className="w-full bg-green-600 text-white py-2.5 px-4 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm font-medium mt-6"
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <span>অ্যাকাউন্ট তৈরি হচ্ছে...</span>
+              </>
+            ) : redirecting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <span>রিডাইরেক্ট হচ্ছে...</span>
+              </>
+            ) : (
+              <>
+                <UserPlus className="w-4 h-4" />
+                <span>অ্যাকাউন্ট তৈরি করুন</span>
+              </>
+            )}
+          </button>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              ইতিমধ্যে একটি অ্যাকাউন্ট আছে?{' '}
               <button
                 type="button"
-                onClick={handleBack}
-                disabled={loading || redirecting}
-                className="flex-1 bg-gray-100 text-gray-700 py-2.5 px-4 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm font-medium"
+                onClick={onSwitchToLogin}
+                className="text-green-600 hover:text-green-700 font-medium"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
+                এখানে সাইন ইন করুন
               </button>
-              
-              <button
-                type="submit"
-                disabled={loading || redirecting}
-                className="flex-1 bg-green-600 text-white py-2.5 px-4 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm font-medium"
-              >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    <span>Creating Account...</span>
-                  </>
-                ) : redirecting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    <span>Redirecting...</span>
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="w-4 h-4" />
-                    <span>Create Account</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-        )}
+            </p>
+          </div>
+        </form>
       </div>
     </div>
     </>

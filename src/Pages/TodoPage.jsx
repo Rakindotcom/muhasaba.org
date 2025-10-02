@@ -26,7 +26,6 @@ const TodoPage = () => {
   const [activeTab, setActiveTab] = useState('today') // 'today' or 'missed'
   const [showAddModal, setShowAddModal] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const { user } = useAuth()
   const { trackAction } = useTimeTracking('todo_page')
 
@@ -81,7 +80,7 @@ const TodoPage = () => {
         lastUpdated: serverTimestamp(),
         dateUpdated: getTodayDateString()
       })
-      setHasUnsavedChanges(false)
+
     } catch (error) {
       console.error('Error saving tasks to Firestore:', error)
     }
@@ -127,7 +126,7 @@ const TodoPage = () => {
 
     } catch (error) {
       console.error('Error loading tasks from Firestore:', error)
-      toast.error('Failed to load tasks. Please refresh the page.')
+      toast.error('কাজগুলো লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)
     }
@@ -142,32 +141,12 @@ const TodoPage = () => {
     }
   }, [user?.uid])
 
-  // Save data when navigating away from page
+  // Auto-save when tasks change
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (hasUnsavedChanges && user?.uid) {
-        saveTasksToFirestore()
-      }
+    if (!loading && user?.uid) {
+      saveTasksToFirestore()
     }
-
-    const handleVisibilityChange = () => {
-      if (document.hidden && hasUnsavedChanges && user?.uid) {
-        saveTasksToFirestore()
-      }
-    }
-
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    return () => {
-      // Save on component unmount (navigation away)
-      if (hasUnsavedChanges && user?.uid) {
-        saveTasksToFirestore()
-      }
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
-  }, [hasUnsavedChanges, user?.uid])
+  }, [tasks, missedTasks, user?.uid, loading])
 
   const addTask = async () => {
     if (newTask.trim()) {
@@ -187,7 +166,6 @@ const TodoPage = () => {
         }
 
         setTasks(updatedTasks)
-        setHasUnsavedChanges(true)
 
         trackAction('task_added', {
           section: activeSection,
@@ -198,10 +176,10 @@ const TodoPage = () => {
         setNewTask('')
         setShowAddModal(false)
       } else {
-        toast.error('You can only add new tasks to today\'s list')
+        toast.error('আপনি শুধুমাত্র আজকের তালিকায় নতুন কাজ যোগ করতে পারেন')
       }
     } else {
-      toast.error('Please enter a task description')
+      toast.error('দয়া করে কাজের বিবরণ লিখুন')
     }
   }
 
@@ -223,7 +201,6 @@ const TodoPage = () => {
       }
       setTasks(updatedTasks)
     }
-    setHasUnsavedChanges(true)
   }
 
   const deleteTask = (id, section, isMissed = false) => {
@@ -240,7 +217,6 @@ const TodoPage = () => {
       }
       setTasks(updatedTasks)
     }
-    setHasUnsavedChanges(true)
   }
 
   const moveTaskToToday = (task, section) => {
@@ -264,9 +240,8 @@ const TodoPage = () => {
 
     setMissedTasks(updatedMissedTasks)
     setTasks(updatedTasks)
-    setHasUnsavedChanges(true)
     
-    toast.success('Task moved to today\'s list')
+    toast.success('কাজটি আজকের তালিকায় স্থানান্তরিত হয়েছে')
   }
 
   const TaskSection = ({ title, tasks, section, icon: Icon, bgColor, isMissed = false }) => (
@@ -283,7 +258,7 @@ const TodoPage = () => {
         {tasks.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Icon size={32} className="mx-auto mb-2 opacity-50" />
-            <p className="text-sm">{isMissed ? 'No missed tasks' : 'No tasks added yet'}</p>
+            <p className="text-sm">{isMissed ? 'কোন মিসড কাজ নেই' : 'এখনো কোন কাজ যোগ করা হয়নি'}</p>
           </div>
         ) : (
           tasks.map(task => (
@@ -305,7 +280,7 @@ const TodoPage = () => {
                 </span>
                 {isMissed && task.dateCreated && (
                   <span className="text-xs text-gray-500 mt-1 block">
-                    Created: {new Date(task.dateCreated).toLocaleDateString('en-US', {
+                    তৈরি: {new Date(task.dateCreated).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
                       year: 'numeric'
@@ -319,7 +294,7 @@ const TodoPage = () => {
                   <button
                     onClick={() => moveTaskToToday(task, section)}
                     className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors"
-                    title="Move to today"
+                    title="আজকে নিয়ে যান"
                   >
                     <Calendar size={16} />
                   </button>
@@ -344,7 +319,7 @@ const TodoPage = () => {
       <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your tasks...</p>
+          <p className="text-gray-600">আপনার কাজগুলো লোড হচ্ছে...</p>
         </div>
       </div>
     )
@@ -353,9 +328,9 @@ const TodoPage = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
       <div className="text-center mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Daily Tasks</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">দৈনিক কাজসমূহ</h1>
         <div className="flex flex-col items-center gap-1">
-          <p className="text-gray-600 text-sm md:text-base">Beginning of the Day Planning</p>
+          <p className="text-gray-600 text-sm md:text-base">দিনের শুরুর পরিকল্পনা</p>
           <p className="text-blue-600 font-medium text-sm">
             {new Date().toLocaleDateString('en-US', {
               weekday: 'long',
@@ -364,12 +339,7 @@ const TodoPage = () => {
               day: 'numeric'
             })}
           </p>
-          {hasUnsavedChanges && (
-            <div className="flex items-center gap-2 text-xs text-orange-600">
-              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-              <span>Unsaved changes</span>
-            </div>
-          )}
+
         </div>
       </div>
 
@@ -383,7 +353,7 @@ const TodoPage = () => {
               : 'text-gray-600 hover:text-gray-800'
               }`}
           >
-            Today's Tasks
+            আজকের কাজ
           </button>
           <button
             onClick={() => setActiveTab('missed')}
@@ -392,7 +362,7 @@ const TodoPage = () => {
               : 'text-gray-600 hover:text-gray-800'
               }`}
           >
-            Missed Tasks
+            মিসড কাজ
             {(missedTasks.mustDo.length + missedTasks.goodToDo.length) > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {missedTasks.mustDo.length + missedTasks.goodToDo.length}
@@ -417,7 +387,7 @@ const TodoPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Add New Task</h3>
+              <h3 className="text-lg font-semibold text-gray-900">নতুন কাজ যোগ করুন</h3>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="text-gray-400 hover:text-gray-600 p-1"
@@ -428,7 +398,7 @@ const TodoPage = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">ক্যাটেগরি</label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setActiveSection('mustDo')}
@@ -437,7 +407,7 @@ const TodoPage = () => {
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-2 border-transparent'
                       }`}
                   >
-                    Must Do
+                    অবশ্যই করতে হবে
                   </button>
                   <button
                     onClick={() => setActiveSection('goodToDo')}
@@ -446,18 +416,18 @@ const TodoPage = () => {
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-2 border-transparent'
                       }`}
                   >
-                    Good to Do
+                    করলে ভালো হয়
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Task Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">কাজের বিবরণ</label>
                 <input
                   type="text"
                   value={newTask}
                   onChange={(e) => setNewTask(e.target.value)}
-                  placeholder={`Enter ${activeSection === 'mustDo' ? 'important' : 'optional'} task...`}
+                  placeholder={`${activeSection === 'mustDo' ? 'গুরুত্বপূর্ণ' : 'ঐচ্ছিক'} কাজ লিখুন...`}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   onKeyDown={(e) => e.key === 'Enter' && addTask()}
                   autoFocus
@@ -469,13 +439,13 @@ const TodoPage = () => {
                   onClick={() => setShowAddModal(false)}
                   className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                 >
-                  Cancel
+                  বাতিল
                 </button>
                 <button
                   onClick={addTask}
                   className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
-                  Add Task
+                  কাজ যোগ করুন
                 </button>
               </div>
             </div>
@@ -488,7 +458,7 @@ const TodoPage = () => {
         {activeTab === 'today' ? (
           <>
             <TaskSection
-              title="Most Important Tasks - Must Do"
+              title="সবচেয়ে গুরুত্বপূর্ণ কাজ - অবশ্যই করতে হবে"
               tasks={tasks.mustDo}
               section="mustDo"
               icon={Star}
@@ -497,7 +467,7 @@ const TodoPage = () => {
             />
 
             <TaskSection
-              title="Other Tasks - Good to Do"
+              title="অন্যান্য কাজ - করলে ভালো হয়"
               tasks={tasks.goodToDo}
               section="goodToDo"
               icon={Check}
@@ -508,7 +478,7 @@ const TodoPage = () => {
         ) : (
           <>
             <TaskSection
-              title="Missed Important Tasks"
+              title="মিসড গুরুত্বপূর্ণ কাজ"
               tasks={missedTasks.mustDo}
               section="mustDo"
               icon={Clock}
@@ -517,7 +487,7 @@ const TodoPage = () => {
             />
 
             <TaskSection
-              title="Missed Other Tasks"
+              title="মিসড অন্যান্য কাজ"
               tasks={missedTasks.goodToDo}
               section="goodToDo"
               icon={Clock}

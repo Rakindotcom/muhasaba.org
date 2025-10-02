@@ -27,15 +27,14 @@ const PrayerPage = () => {
     })
 
     const [loading, setLoading] = useState(true)
-    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
     const { user } = useAuth()
 
     const prayerNames = {
-        fajr: 'Fajr',
-        dhuhr: 'Dhuhr',
-        asr: 'Asr',
-        maghrib: 'Maghrib',
-        isha: 'Isha'
+        fajr: 'ফজর',
+        dhuhr: 'যুহর',
+        asr: 'আসর',
+        maghrib: 'মাগরিব',
+        isha: 'ইশা'
     }
 
     // Helper function to get today's date string
@@ -65,7 +64,7 @@ const PrayerPage = () => {
                 lastUpdated: serverTimestamp()
             }, { merge: true })
 
-            setHasUnsavedChanges(false)
+
         } catch (error) {
             console.error('Error saving prayer data to Firestore:', error)
         }
@@ -191,32 +190,12 @@ const PrayerPage = () => {
         }
     }, [user?.uid])
 
-    // Save data when navigating away from page
+    // Auto-save when prayer data changes
     useEffect(() => {
-        const handleBeforeUnload = () => {
-            if (hasUnsavedChanges && user?.uid) {
-                savePrayerDataToFirestore()
-            }
+        if (!loading && user?.uid) {
+            savePrayerDataToFirestore()
         }
-
-        const handleVisibilityChange = () => {
-            if (document.hidden && hasUnsavedChanges && user?.uid) {
-                savePrayerDataToFirestore()
-            }
-        }
-
-        window.addEventListener('beforeunload', handleBeforeUnload)
-        document.addEventListener('visibilitychange', handleVisibilityChange)
-
-        return () => {
-            // Save on component unmount (navigation away)
-            if (hasUnsavedChanges && user?.uid) {
-                savePrayerDataToFirestore()
-            }
-            window.removeEventListener('beforeunload', handleBeforeUnload)
-            document.removeEventListener('visibilitychange', handleVisibilityChange)
-        }
-    }, [hasUnsavedChanges, user?.uid])
+    }, [prayerData, user?.uid, loading])
 
     const togglePrayer = (prayer, type) => {
         setPrayerData(prev => {
@@ -256,7 +235,6 @@ const PrayerPage = () => {
                 }
             }
         })
-        setHasUnsavedChanges(true)
     }
 
     const getStats = () => {
@@ -301,26 +279,7 @@ const PrayerPage = () => {
         }
     }
 
-    // Function to reset qaza data (for fixing accumulated incorrect data)
-    const resetQazaData = async () => {
-        const resetData = {
-            fajr: 0,
-            dhuhr: 0,
-            asr: 0,
-            maghrib: 0,
-            isha: 0
-        }
-        setQazaData(resetData)
-        
-        if (user?.uid) {
-            const qazaRef = doc(db, 'userPrayers', user.uid)
-            await setDoc(qazaRef, {
-                qazaData: resetData,
-                lastUpdated: serverTimestamp(),
-                lastQazaCheck: null // Reset check date so it can start fresh
-            }, { merge: true })
-        }
-    }
+
 
     const { totalPrayed, totalJamat, totalMissed } = getStats()
 
@@ -330,7 +289,7 @@ const PrayerPage = () => {
             <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
                 <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading your prayer data...</p>
+                    <p className="text-gray-600">আপনার নামাজের ডেটা লোড হচ্ছে...</p>
                 </div>
             </div>
         )
@@ -339,8 +298,8 @@ const PrayerPage = () => {
     return (
         <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
             <div className="text-center mb-6 md:mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Prayer Tracker</h1>
-                <p className="text-gray-600 text-sm md:text-base">End of the Day Review</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">নামাজ ট্র্যাকার</h1>
+                <p className="text-gray-600 text-sm md:text-base">দিনের শেষে পর্যালোচনা</p>
                 <div className="mt-2 flex items-center justify-center gap-2 text-blue-600">
                     <Calendar size={16} />
                     <span className="text-sm font-medium">
@@ -352,27 +311,22 @@ const PrayerPage = () => {
                         })}
                     </span>
                 </div>
-                {hasUnsavedChanges && (
-                    <div className="flex items-center justify-center gap-2 text-xs text-orange-600 mt-2">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                        <span>Unsaved changes</span>
-                    </div>
-                )}
+
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
                 <div className="bg-green-50 rounded-xl p-4 md:p-6 text-center hover:bg-green-100 transition-colors">
                     <div className="text-2xl md:text-4xl font-bold text-green-600">{totalPrayed}</div>
-                    <div className="text-xs md:text-sm text-green-700 mt-1">Prayed</div>
+                    <div className="text-xs md:text-sm text-green-700 mt-1">পড়েছি</div>
                 </div>
                 <div className="bg-blue-50 rounded-xl p-4 md:p-6 text-center hover:bg-blue-100 transition-colors">
                     <div className="text-2xl md:text-4xl font-bold text-blue-600">{totalJamat}</div>
-                    <div className="text-xs md:text-sm text-blue-700 mt-1">Jamat</div>
+                    <div className="text-xs md:text-sm text-blue-700 mt-1">জামাত</div>
                 </div>
                 <div className="bg-red-50 rounded-xl p-4 md:p-6 text-center hover:bg-red-100 transition-colors">
                     <div className="text-2xl md:text-4xl font-bold text-red-600">{totalMissed}</div>
-                    <div className="text-xs md:text-sm text-red-700 mt-1">Missed</div>
+                    <div className="text-xs md:text-sm text-red-700 mt-1">মিসড</div>
                 </div>
             </div>
 
@@ -381,7 +335,7 @@ const PrayerPage = () => {
                 <div className="lg:col-span-2 bg-white rounded-xl p-4 md:p-6 mb-6 lg:mb-0 shadow-sm">
                     <h3 className="font-semibold text-gray-800 text-lg mb-4 flex items-center gap-2">
                         <Clock size={20} />
-                        Today's Prayers
+                        আজকের নামাজ
                     </h3>
 
                     <div className="space-y-3">
@@ -398,7 +352,7 @@ const PrayerPage = () => {
                                             }`}
                                     >
                                         {prayerData[key].prayed ? <Check size={16} /> : <X size={16} />}
-                                        Prayed
+                                        পড়েছি
                                     </button>
 
                                     <button
@@ -409,7 +363,7 @@ const PrayerPage = () => {
                                             }`}
                                     >
                                         {prayerData[key].jamat ? <Check size={16} /> : <X size={16} />}
-                                        Jamat
+                                        জামাত
                                     </button>
                                 </div>
                             </div>
@@ -422,26 +376,15 @@ const PrayerPage = () => {
                     <h3 className="font-semibold text-gray-800 text-lg mb-4 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Moon size={20} />
-                            Qaza Prayers
+                            কাজা নামাজ
                         </div>
-                        <div className="flex items-center gap-2">
-                            <span className="text-2xl font-bold text-orange-600">{getTotalQaza()}</span>
-                            {getTotalQaza() > 0 && (
-                                <button
-                                    onClick={resetQazaData}
-                                    className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200 transition-colors"
-                                    title="Reset accumulated qaza data"
-                                >
-                                    Reset
-                                </button>
-                            )}
-                        </div>
+                        <span className="text-2xl font-bold text-orange-600">{getTotalQaza()}</span>
                     </h3>
 
                     {getTotalQaza() === 0 ? (
                         <div className="text-center py-6">
                             <Moon size={48} className="mx-auto mb-4 text-orange-400" />
-                            <p className="text-gray-600 text-sm">No pending prayers</p>
+                            <p className="text-gray-600 text-sm">কোন বাকি নামাজ নেই</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -455,7 +398,7 @@ const PrayerPage = () => {
                                                 onClick={() => prayQaza(prayer)}
                                                 className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition-colors"
                                             >
-                                                Pray
+                                                পড়ুন
                                             </button>
                                         </div>
                                     </div>

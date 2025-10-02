@@ -97,12 +97,12 @@ const SettingsPage = () => {
 
   const clearAllData = async () => {
     if (!user?.uid) {
-      toast.error('Please log in to clear data')
+      toast.error('ডেটা মুছতে দয়া করে লগ ইন করুন')
       return
     }
 
     try {
-      toast.info('Clearing all data...')
+      toast.info('সব ডেটা মুছে ফেলা হচ্ছে...')
 
       // Clear Firestore data
       const collections = [
@@ -142,10 +142,10 @@ const SettingsPage = () => {
       localStorage.clear()
 
       setShowClearModal(false)
-      toast.success('All data cleared successfully!')
+      toast.success('সব ডেটা সফলভাবে মুছে ফেলা হয়েছে!')
     } catch (error) {
       console.error('Clear data error:', error)
-      toast.error('Failed to clear all data')
+      toast.error('সব ডেটা মুছতে ব্যর্থ')
     }
   }
 
@@ -154,7 +154,7 @@ const SettingsPage = () => {
       setProfile(prev => ({ ...prev, name: tempName.trim() }))
       setShowNameModal(false)
     } else {
-      toast.error('Please enter a valid name')
+      toast.error('দয়া করে একটি বৈধ নাম লিখুন')
     }
   }
 
@@ -184,20 +184,20 @@ const SettingsPage = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
       <div className="text-center mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Settings</h1>
-        <p className="text-gray-600 text-sm md:text-base">Manage your account and preferences</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">সেটিংস</h1>
+        <p className="text-gray-600 text-sm md:text-base">আপনার অ্যাকাউন্ট এবং পছন্দসমূহ পরিচালনা করুন</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         <div className="space-y-6">
           {/* Profile Section */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">Account</h3>
+            <h3 className="font-semibold text-gray-800 text-lg mb-4">অ্যাকাউন্ট</h3>
             <div className="space-y-3">
               <SettingItem
                 icon={User}
-                title="Profile"
-                subtitle={`${user?.displayName || profile.name || 'No name set'} • ${user?.email || 'No email'}`}
+                title="প্রোফাইল"
+                subtitle={`${user?.displayName || profile.name || 'কোন নাম সেট করা হয়নি'} • ${user?.email || 'কোন ইমেইল নেই'}`}
                 onClick={() => {
                   setTempName(user?.displayName || profile.name || '')
                   setShowNameModal(true)
@@ -208,12 +208,12 @@ const SettingsPage = () => {
 
           {/* App Settings */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">App Settings</h3>
+            <h3 className="font-semibold text-gray-800 text-lg mb-4">অ্যাপ সেটিংস</h3>
             <div className="space-y-3">
               <SettingItem
                 icon={Bell}
-                title="Notifications"
-                subtitle="Prayer reminders, task alerts"
+                title="নোটিফিকেশন"
+                subtitle="নামাজের রিমাইন্ডার, কাজের সতর্কতা"
                 onClick={() => {
                   const newState = !notifications.prayer
                   setNotifications(prev => ({
@@ -234,12 +234,12 @@ const SettingsPage = () => {
 
           {/* Reports */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">Reports</h3>
+            <h3 className="font-semibold text-gray-800 text-lg mb-4">রিপোর্ট</h3>
             <div className="space-y-3">
               <SettingItem
                 icon={BarChart3}
-                title="Monthly Report"
-                subtitle="View prayer tracking and growth scores"
+                title="মাসিক রিপোর্ট"
+                subtitle="নামাজ ট্র্যাকিং এবং উন্নতির স্কোর দেখুন"
                 onClick={() => setShowMonthlyReport(true)}
               />
             </div>
@@ -249,12 +249,12 @@ const SettingsPage = () => {
         <div className="space-y-6">
           {/* Billing */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">Billing</h3>
+            <h3 className="font-semibold text-gray-800 text-lg mb-4">বিলিং</h3>
             <div className="space-y-3">
               <SettingItem
                 icon={CreditCard}
-                title="Billing"
-                subtitle="Free version - No billing required"
+                title="বিলিং"
+                subtitle="ফ্রি ভার্সন - কোন বিলিং প্রয়োজন নেই"
                 onClick={() => { }}
               />
             </div>
@@ -264,7 +264,7 @@ const SettingsPage = () => {
 
           {/* Account Actions */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">Account Actions</h3>
+            <h3 className="font-semibold text-gray-800 text-lg mb-4">অ্যাকাউন্ট অ্যাকশন</h3>
             <div className="space-y-3">
               <button
                 onClick={() => setShowSignOutModal(true)}
@@ -275,8 +275,8 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-blue-800 text-base">Sign Out</div>
-                  <div className="text-sm text-blue-600 mt-1">Sign out of your account</div>
+                  <div className="font-medium text-blue-800 text-base">সাইন আউট</div>
+                  <div className="text-sm text-blue-600 mt-1">আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন</div>
                 </div>
 
                 <ChevronRight size={20} className="text-blue-400" />
@@ -296,8 +296,8 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-red-800 text-base">Clear All Data</div>
-                  <div className="text-sm text-red-600 mt-1">This will delete all your data permanently</div>
+                  <div className="font-medium text-red-800 text-base">সব ডেটা মুছে ফেলুন</div>
+                  <div className="text-sm text-red-600 mt-1">এটি আপনার সব ডেটা স্থায়ীভাবে মুছে দেবে</div>
                 </div>
 
                 <ChevronRight size={20} className="text-red-400" />
@@ -310,7 +310,7 @@ const SettingsPage = () => {
       {/* App Info */}
       <div className="text-center text-gray-500 text-sm mt-8">
         <p>Muhasaba.org v1.0.0</p>
-        <p className="mt-1">Built with ❤️ for the Muslim community</p>
+        <p className="mt-1">মুসলিম সম্প্রদায়ের জন্য ❤️ দিয়ে তৈরি</p>
       </div>
 
       {/* Name Edit Modal */}
@@ -318,7 +318,7 @@ const SettingsPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Edit Name</h3>
+              <h3 className="text-lg font-semibold text-gray-900">নাম সম্পাদনা করুন</h3>
               <button
                 onClick={() => setShowNameModal(false)}
                 className="text-gray-400 hover:text-gray-600 p-1"
@@ -329,12 +329,12 @@ const SettingsPage = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">আপনার নাম</label>
                 <input
                   type="text"
                   value={tempName}
                   onChange={(e) => setTempName(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder="আপনার নাম লিখুন"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   onKeyDown={(e) => e.key === 'Enter' && updateName()}
                   autoFocus
@@ -346,13 +346,13 @@ const SettingsPage = () => {
                   onClick={() => setShowNameModal(false)}
                   className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                 >
-                  Cancel
+                  বাতিল
                 </button>
                 <button
                   onClick={updateName}
                   className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
-                  Save
+                  সংরক্ষণ
                 </button>
               </div>
             </div>
@@ -365,7 +365,7 @@ const SettingsPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Sign Out</h3>
+              <h3 className="text-lg font-semibold text-gray-900">সাইন আউট</h3>
               <button
                 onClick={() => setShowSignOutModal(false)}
                 className="text-gray-400 hover:text-gray-600 p-1"
@@ -375,20 +375,20 @@ const SettingsPage = () => {
             </div>
 
             <div className="space-y-4">
-              <p className="text-gray-600">Are you sure you want to sign out of your account?</p>
+              <p className="text-gray-600">আপনি কি নিশ্চিত যে আপনি আপনার অ্যাকাউন্ট থেকে সাইন আউট করতে চান?</p>
 
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setShowSignOutModal(false)}
                   className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                 >
-                  Cancel
+                  বাতিল
                 </button>
                 <button
                   onClick={handleSignOut}
                   className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
-                  Sign Out
+                  সাইন আউট
                 </button>
               </div>
             </div>
@@ -401,7 +401,7 @@ const SettingsPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-red-600">Clear All Data</h3>
+              <h3 className="text-lg font-semibold text-red-600">সব ডেটা মুছে ফেলুন</h3>
               <button
                 onClick={() => setShowClearModal(false)}
                 className="text-gray-400 hover:text-gray-600 p-1"
@@ -412,29 +412,29 @@ const SettingsPage = () => {
 
             <div className="space-y-4">
               <p className="text-gray-600">
-                Are you sure you want to clear all data? This will permanently delete:
+                আপনি কি নিশ্চিত যে আপনি সব ডেটা মুছে ফেলতে চান? এটি স্থায়ীভাবে মুছে দেবে:
               </p>
               <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                <li>All tasks and progress</li>
-                <li>Prayer tracking data</li>
-                <li>Growth scores</li>
-                <li>Contact information</li>
-                <li>All settings and preferences</li>
+                <li>সব কাজ এবং অগ্রগতি</li>
+                <li>নামাজ ট্র্যাকিং ডেটা</li>
+                <li>উন্নতির স্কোর</li>
+                <li>যোগাযোগের তথ্য</li>
+                <li>সব সেটিংস এবং পছন্দসমূহ</li>
               </ul>
-              <p className="text-red-600 font-medium text-sm">This action cannot be undone!</p>
+              <p className="text-red-600 font-medium text-sm">এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না!</p>
 
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setShowClearModal(false)}
                   className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                 >
-                  Cancel
+                  বাতিল
                 </button>
                 <button
                   onClick={clearAllData}
                   className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                 >
-                  Clear All Data
+                  সব ডেটা মুছে ফেলুন
                 </button>
               </div>
             </div>
