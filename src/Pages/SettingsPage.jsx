@@ -311,6 +311,17 @@ const SettingsPage = () => {
       <div className="text-center text-gray-500 text-sm mt-8">
         <p>Muhasaba.org v1.0.0</p>
         <p className="mt-1">মুসলিম সম্প্রদায়ের জন্য ❤️ দিয়ে তৈরি</p>
+        <p>
+                Developed by{" "}
+                <a
+                  href="https://www.linkedin.com/in/rakinalshahriar/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-teal-600 hover:text-teal-800 cursor-pointer transition-colors underline"
+                >
+                  Rakin Al Shahriar
+                </a>
+              </p>
       </div>
 
       {/* Name Edit Modal */}
@@ -446,7 +457,7 @@ const SettingsPage = () => {
       {showMonthlyReport && (
         <MonthlyReport onClose={() => setShowMonthlyReport(false)} />
       )}
-
+      
     </div>
   )
 }

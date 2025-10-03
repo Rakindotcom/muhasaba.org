@@ -19,11 +19,14 @@ const PrayerPage = () => {
         isha: { prayed: false, jamat: false }
     })
     const [qazaData, setQazaData] = useState({
-        fajr: 0,
-        dhuhr: 0,
-        asr: 0,
-        maghrib: 0,
-        isha: 0
+        prayers: {
+            fajr: false,
+            dhuhr: false,
+            asr: false,
+            maghrib: false,
+            isha: false
+        },
+        date: null
     })
 
     const [loading, setLoading] = useState(true)
@@ -43,7 +46,7 @@ const PrayerPage = () => {
     }
 
     // Save prayer data to Firestore
-    const savePrayerDataToFirestore = async (todayPrayers = prayerData, qazaPrayers = qazaData) => {
+    const savePrayerDataToFirestore = async (todayPrayers = prayerData) => {
         if (!user?.uid) return
 
         try {
@@ -57,14 +60,6 @@ const PrayerPage = () => {
                 lastUpdated: serverTimestamp()
             })
 
-            // Save qaza data
-            const qazaRef = doc(db, 'userPrayers', user.uid)
-            await setDoc(qazaRef, {
-                qazaData: qazaPrayers,
-                lastUpdated: serverTimestamp()
-            }, { merge: true })
-
-
         } catch (error) {
             console.error('Error saving prayer data to Firestore:', error)
         }
@@ -77,43 +72,45 @@ const PrayerPage = () => {
         return yesterday.toISOString().split('T')[0]
     }
 
-    // Check yesterday's prayers and add missed ones to qaza (only if not already checked)
-    const checkAndAddMissedPrayersToQaza = async (currentQazaData, lastQazaCheck) => {
-        if (!user?.uid) return currentQazaData
+    // Helper function to format date in Bengali
+    const formatDateInBengali = (dateString) => {
+        const date = new Date(dateString)
+        return date.toLocaleDateString('bn-BD', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        })
+    }
+
+    // Load yesterday's missed prayers for qaza
+    const loadYesterdayQaza = async () => {
+        if (!user?.uid) return { prayers: {}, date: null }
 
         try {
             const yesterday = getYesterdayDateString()
-            
-            // Only check yesterday if we haven't already processed it
-            if (lastQazaCheck === yesterday) {
-                return currentQazaData // Already processed yesterday's prayers
-            }
-
             const yesterdayPrayerRef = doc(db, 'userPrayers', user.uid, 'dailyPrayers', yesterday)
             const yesterdayDoc = await getDoc(yesterdayPrayerRef)
 
             if (yesterdayDoc.exists()) {
                 const yesterdayPrayers = yesterdayDoc.data().prayers
-                const updatedQaza = { ...currentQazaData }
-                let qazaAdded = false
+                const missedPrayers = {}
 
-                // Check each prayer from yesterday
+                // Find missed prayers from yesterday
                 Object.entries(yesterdayPrayers).forEach(([prayerName, prayerStatus]) => {
-                    if (!prayerStatus.prayed) {
-                        updatedQaza[prayerName] = (updatedQaza[prayerName] || 0) + 1
-                        qazaAdded = true
-                    }
+                    missedPrayers[prayerName] = !prayerStatus.prayed
                 })
 
-                if (qazaAdded) {
-                    return updatedQaza
+                return {
+                    prayers: missedPrayers,
+                    date: yesterday
                 }
             }
 
-            return currentQazaData
+            return { prayers: {}, date: null }
         } catch (error) {
-            console.error('Error checking yesterday\'s prayers:', error)
-            return currentQazaData
+            console.error('Error loading yesterday\'s prayers:', error)
+            return { prayers: {}, date: null }
         }
     }
 
@@ -135,44 +132,9 @@ const PrayerPage = () => {
                 setPrayerData(dailyDoc.data().prayers)
             }
 
-            // Load qaza data
-            const qazaRef = doc(db, 'userPrayers', user.uid)
-            const qazaDoc = await getDoc(qazaRef)
-            
-            let currentQazaData = {
-                fajr: 0,
-                dhuhr: 0,
-                asr: 0,
-                maghrib: 0,
-                isha: 0
-            }
-
-            if (qazaDoc.exists() && qazaDoc.data().qazaData) {
-                currentQazaData = qazaDoc.data().qazaData
-            }
-
-            // Check if we need to add missed prayers to qaza (only once per missed day)
-            const lastQazaCheck = qazaDoc.exists() ? qazaDoc.data().lastQazaCheck : null
-            const yesterday = getYesterdayDateString()
-
-            // Only check yesterday's prayers if we haven't already processed that specific day
-            if (lastQazaCheck !== yesterday) {
-                // Check yesterday's prayers and add any missed ones
-                const updatedQazaData = await checkAndAddMissedPrayersToQaza(currentQazaData, lastQazaCheck)
-                setQazaData(updatedQazaData)
-                
-                // Update the last check date to yesterday (the day we just processed)
-                if (user?.uid) {
-                    const qazaRef = doc(db, 'userPrayers', user.uid)
-                    await setDoc(qazaRef, {
-                        qazaData: updatedQazaData,
-                        lastUpdated: serverTimestamp(),
-                        lastQazaCheck: yesterday
-                    }, { merge: true })
-                }
-            } else {
-                setQazaData(currentQazaData)
-            }
+            // Load yesterday's missed prayers for qaza
+            const yesterdayQaza = await loadYesterdayQaza()
+            setQazaData(yesterdayQaza)
 
         } catch (error) {
             console.error('Error loading prayer data from Firestore:', error)
@@ -249,33 +211,25 @@ const PrayerPage = () => {
 
 
     const getTotalQaza = () => {
-        return Object.values(qazaData).reduce((sum, count) => sum + count, 0)
+        if (!qazaData.prayers) return 0
+        return Object.values(qazaData.prayers).filter(missed => missed).length
     }
 
     const prayQaza = async (prayer) => {
-        if (qazaData[prayer] > 0) {
+        if (qazaData.prayers[prayer]) {
             const updatedQazaData = {
                 ...qazaData,
-                [prayer]: Math.max(0, qazaData[prayer] - 1)
+                prayers: {
+                    ...qazaData.prayers,
+                    [prayer]: false
+                }
             }
             
             // Update local state immediately
             setQazaData(updatedQazaData)
             
-            // Save to database immediately
-            if (user?.uid) {
-                try {
-                    const qazaRef = doc(db, 'userPrayers', user.uid)
-                    await setDoc(qazaRef, {
-                        qazaData: updatedQazaData,
-                        lastUpdated: serverTimestamp()
-                    }, { merge: true })
-                } catch (error) {
-                    console.error('Error saving qaza prayer completion:', error)
-                    // Revert local state if save failed
-                    setQazaData(qazaData)
-                }
-            }
+            // Show success message
+            toast.success(`${prayerNames[prayer]} কাজা নামাজ সম্পন্ন হয়েছে`)
         }
     }
 
@@ -373,7 +327,7 @@ const PrayerPage = () => {
 
                 {/* Qaza Section */}
                 <div className="bg-orange-50 rounded-xl p-4 md:p-6 h-fit">
-                    <h3 className="font-semibold text-gray-800 text-lg mb-4 flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-800 text-lg mb-2 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Moon size={20} />
                             কাজা নামাজ
@@ -381,19 +335,26 @@ const PrayerPage = () => {
                         <span className="text-2xl font-bold text-orange-600">{getTotalQaza()}</span>
                     </h3>
 
+                    {qazaData.date && (
+                        <div className="mb-4 text-center">
+                            <p className="text-xs text-gray-600 bg-white/50 rounded-lg px-2 py-1">
+                                {formatDateInBengali(qazaData.date)} এর মিসড নামাজ
+                            </p>
+                        </div>
+                    )}
+
                     {getTotalQaza() === 0 ? (
                         <div className="text-center py-6">
                             <Moon size={48} className="mx-auto mb-4 text-orange-400" />
-                            <p className="text-gray-600 text-sm">কোন বাকি নামাজ নেই</p>
+                            <p className="text-gray-600 text-sm">গতকালের কোন বাকি নামাজ নেই</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {Object.entries(qazaData).map(([prayer, count]) => (
-                                count > 0 && (
+                            {Object.entries(qazaData.prayers).map(([prayer, missed]) => (
+                                missed && (
                                     <div key={prayer} className="flex items-center justify-between bg-white/70 rounded-lg p-3">
                                         <span className="font-medium text-gray-800">{prayerNames[prayer]}</span>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-orange-600 font-bold">{count}</span>
                                             <button
                                                 onClick={() => prayQaza(prayer)}
                                                 className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition-colors"

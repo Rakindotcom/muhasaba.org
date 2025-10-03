@@ -4,7 +4,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  updateProfile
+  updateProfile,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -98,6 +99,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const resetPassword = async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (error) {
+      const errorInfo = handleFirebaseError(error);
+      throw new Error(errorInfo.message);
+    }
+  };
+
   const logout = async () => {
     // Remove device session before signing out
     if (user?.uid) {
@@ -134,6 +145,7 @@ export const AuthProvider = ({ children }) => {
     user,
     signup,
     login,
+    resetPassword,
     logout,
     trackActivity,
     loading

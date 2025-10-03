@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Check, X, Star, Clock, Calendar } from 'lucide-react'
+import { FileText, Clock } from 'lucide-react'
 import { useTimeTracking } from '../hooks/useTimeTracking'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'react-toastify'
@@ -240,14 +240,13 @@ const TodoPage = () => {
 
     setMissedTasks(updatedMissedTasks)
     setTasks(updatedTasks)
-    
+
     toast.success('কাজটি আজকের তালিকায় স্থানান্তরিত হয়েছে')
   }
 
-  const TaskSection = ({ title, tasks, section, icon: Icon, bgColor, isMissed = false }) => (
+  const TaskSection = ({ title, tasks, section, bgColor, isMissed = false }) => (
     <div className={`${bgColor} rounded-xl p-4 md:p-6 mb-4 lg:mb-0`}>
       <div className="flex items-center gap-2 mb-4">
-        <Icon size={20} className="text-gray-700" />
         <h3 className="font-semibold text-gray-800 text-lg">{title}</h3>
         <span className="text-sm text-gray-600 bg-white/60 px-2 py-1 rounded-full">
           {tasks.length}
@@ -257,8 +256,17 @@ const TodoPage = () => {
       <div className="space-y-3">
         {tasks.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            <Icon size={32} className="mx-auto mb-2 opacity-50" />
-            <p className="text-sm">{isMissed ? 'কোন মিসড কাজ নেই' : 'এখনো কোন কাজ যোগ করা হয়নি'}</p>
+            {isMissed ? (
+              <>
+                <Clock size={32} className="mx-auto mb-2 opacity-50" />
+                <p className="text-sm">কোন মিসড কাজ নেই</p>
+              </>
+            ) : (
+              <>
+                <FileText size={32} className="mx-auto mb-2 opacity-50" />
+                <p className="text-sm">এখনো কোন কাজ যোগ করা হয়নি</p>
+              </>
+            )}
           </div>
         ) : (
           tasks.map(task => (
@@ -270,7 +278,7 @@ const TodoPage = () => {
                   : 'border-gray-300 hover:border-green-400 hover:scale-105'
                   }`}
               >
-                {task.completed && <Check size={14} />}
+                {task.completed && '✓'}
               </button>
 
               <div className="flex-1">
@@ -293,17 +301,17 @@ const TodoPage = () => {
                 {isMissed && (
                   <button
                     onClick={() => moveTaskToToday(task, section)}
-                    className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                    className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
                     title="আজকে নিয়ে যান"
                   >
-                    <Calendar size={16} />
+                    আজকে
                   </button>
                 )}
                 <button
                   onClick={() => deleteTask(task.id, section, isMissed)}
                   className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-colors"
                 >
-                  <X size={16} />
+                  ✕
                 </button>
               </div>
             </div>
@@ -376,9 +384,9 @@ const TodoPage = () => {
       {activeTab === 'today' && (
         <button
           onClick={() => setShowAddModal(true)}
-          className="fixed bottom-33 md:bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
+          className="fixed bottom-33 md:bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40 text-2xl font-bold"
         >
-          <Plus size={24} />
+          +
         </button>
       )}
 
@@ -390,9 +398,9 @@ const TodoPage = () => {
               <h3 className="text-lg font-semibold text-gray-900">নতুন কাজ যোগ করুন</h3>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600 p-1"
+                className="text-gray-400 hover:text-gray-600 p-1 text-xl"
               >
-                <X size={20} />
+                ✕
               </button>
             </div>
 
@@ -461,7 +469,6 @@ const TodoPage = () => {
               title="সবচেয়ে গুরুত্বপূর্ণ কাজ - অবশ্যই করতে হবে"
               tasks={tasks.mustDo}
               section="mustDo"
-              icon={Star}
               bgColor="bg-red-50"
               isMissed={false}
             />
@@ -470,7 +477,6 @@ const TodoPage = () => {
               title="অন্যান্য কাজ - করলে ভালো হয়"
               tasks={tasks.goodToDo}
               section="goodToDo"
-              icon={Check}
               bgColor="bg-blue-50"
               isMissed={false}
             />
@@ -481,7 +487,6 @@ const TodoPage = () => {
               title="মিসড গুরুত্বপূর্ণ কাজ"
               tasks={missedTasks.mustDo}
               section="mustDo"
-              icon={Clock}
               bgColor="bg-orange-50"
               isMissed={true}
             />
@@ -490,7 +495,6 @@ const TodoPage = () => {
               title="মিসড অন্যান্য কাজ"
               tasks={missedTasks.goodToDo}
               section="goodToDo"
-              icon={Clock}
               bgColor="bg-yellow-50"
               isMissed={true}
             />

@@ -2,8 +2,15 @@
 
 @import "tailwindcss";
 
+@font-face {
+  font-family: "RuhulAminUnicode";
+  src: url("/RUHUL_AMIN_UNICODE.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
-  font-family: "Anek Bangla", sans-serif;
+  font-family: "RuhulAminUnicode", "Hind Siliguri";
 }
 
 /* Poppins for headers */
@@ -14,7 +21,7 @@ h4,
 h5,
 h6,
 .header-font {
-  font-family: "Hind Siliguri", sans-serif;
+  font-family: 'Anek Bangla', sans-serif;
 }
 
 /* Ensure all checkboxes are perfectly round */
@@ -22,4 +29,3 @@ h6,
   border-radius: 50% !important;
   aspect-ratio: 1;
 }
-

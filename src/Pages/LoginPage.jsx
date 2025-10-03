@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, LogIn, KeyRound } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 const LoginPage = ({ onSwitchToSignup }) => {
@@ -8,7 +8,8 @@ const LoginPage = ({ onSwitchToSignup }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login, trackActivity } = useAuth();
+  const [resetLoading, setResetLoading] = useState(false);
+  const { login, resetPassword, trackActivity } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,19 +34,62 @@ const LoginPage = ({ onSwitchToSignup }) => {
         case 'auth/wrong-password':
           errorMessage = 'ভুল পাসওয়ার্ড';
           break;
+        case 'auth/invalid-credential':
+          errorMessage = 'ইমেইল অথবা পাসওয়ার্ড ভুল। দয়া করে আবার চেষ্টা করুন';
+          break;
         case 'auth/invalid-email':
           errorMessage = 'অবৈধ ইমেইল ঠিকানা';
+          break;
+        case 'auth/user-disabled':
+          errorMessage = 'এই অ্যাকাউন্টটি নিষ্ক্রিয় করা হয়েছে';
           break;
         case 'auth/too-many-requests':
           errorMessage = 'অনেক ব্যর্থ প্রচেষ্টা। দয়া করে পরে আবার চেষ্টা করুন';
           break;
+        case 'auth/network-request-failed':
+          errorMessage = 'ইন্টারনেট সংযোগ সমস্যা। দয়া করে আবার চেষ্টা করুন';
+          break;
         default:
-          errorMessage = error.message;
+          errorMessage = 'লগ ইন করতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন';
       }
       
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error('পাসওয়ার্ড রিসেট করতে প্রথমে ইমেইল দিন');
+      return;
+    }
+
+    setResetLoading(true);
+    try {
+      await resetPassword(email);
+      toast.success('পাসওয়ার্ড রিসেট লিংক আপনার ইমেইলে পাঠানো হয়েছে');
+    } catch (error) {
+      console.error('Password reset error:', error);
+      let errorMessage = 'পাসওয়ার্ড রিসেট করতে ব্যর্থ';
+      
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = 'এই ইমেইলের সাথে কোন অ্যাকাউন্ট পাওয়া যায়নি';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'অবৈধ ইমেইল ঠিকানা';
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = 'ইন্টারনেট সংযোগ সমস্যা। দয়া করে আবার চেষ্টা করুন';
+          break;
+        default:
+          errorMessage = 'পাসওয়ার্ড রিসেট করতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন';
+      }
+      
+      toast.error(errorMessage);
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -104,6 +148,21 @@ const LoginPage = ({ onSwitchToSignup }) => {
             )}
           </button>
         </form>
+
+        <div className="mt-3 text-center">
+          <button
+            onClick={handleForgotPassword}
+            disabled={resetLoading}
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 mx-auto"
+          >
+            {resetLoading ? (
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></div>
+            ) : (
+              <KeyRound className="w-3 h-3" />
+            )}
+            পাসওয়ার্ড ভুলে গেছেন?
+          </button>
+        </div>
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">

@@ -67,15 +67,19 @@ export const registerDeviceSession = async (userId) => {
     const userDevicesRef = collection(db, 'userDevices');
     const userSessionsQuery = query(
       userDevicesRef,
-      where('userId', '==', userId),
-      orderBy('lastActive', 'desc')
+      where('userId', '==', userId)
     );
     
     const existingSessions = await getDocs(userSessionsQuery);
     const sessions = existingSessions.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));
+    })).sort((a, b) => {
+      // Sort by lastActive in descending order (most recent first)
+      const aTime = a.lastActive?.toMillis() || 0;
+      const bTime = b.lastActive?.toMillis() || 0;
+      return bTime - aTime;
+    });
     
     // Check if current device is already registered
     const currentDeviceSession = sessions.find(session => session.deviceId === deviceId);
@@ -181,8 +185,7 @@ export const getUserActiveSessions = async (userId) => {
     const userDevicesRef = collection(db, 'userDevices');
     const userSessionsQuery = query(
       userDevicesRef,
-      where('userId', '==', userId),
-      orderBy('lastActive', 'desc')
+      where('userId', '==', userId)
     );
     
     const sessions = await getDocs(userSessionsQuery);
@@ -190,7 +193,12 @@ export const getUserActiveSessions = async (userId) => {
       id: doc.id,
       ...doc.data(),
       isCurrentDevice: doc.data().deviceId === getDeviceId()
-    }));
+    })).sort((a, b) => {
+      // Sort by lastActive in descending order (most recent first)
+      const aTime = a.lastActive?.toMillis() || 0;
+      const bTime = b.lastActive?.toMillis() || 0;
+      return bTime - aTime;
+    });
   } catch (error) {
     console.error('Error getting user sessions:', error);
     return [];
