@@ -11,6 +11,15 @@ import {
 import { db } from '../firebase'
 
 const GrowthPage = () => {
+  // Helper function to get today's date string
+  const getTodayDateString = () => {
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const [userType, setUserType] = useState('student')
   const [growthData, setGrowthData] = useState({
     iman: {
@@ -25,6 +34,7 @@ const GrowthPage = () => {
     life: {}
   })
   const [loading, setLoading] = useState(true)
+  const [currentDate, setCurrentDate] = useState(getTodayDateString())
   const { user } = useAuth()
 
   const userTypes = {
@@ -71,11 +81,6 @@ const GrowthPage = () => {
       { key: 'muhasaba', label: 'দিনের মুহাসাবা - দিনটা কেমন কাটলো তার হিসাব নেওয়া' },
       { key: 'exercise', label: 'ব্যায়াম ও ভালো ঘুম হয়েছে কি?' }
     ]
-  }
-
-  // Helper function to get today's date string
-  const getTodayDateString = () => {
-    return new Date().toISOString().split('T')[0] // YYYY-MM-DD format
   }
 
   // Save growth data to Firestore
@@ -134,6 +139,20 @@ const GrowthPage = () => {
         if (dailyDoc.data().userType) {
           setUserType(dailyDoc.data().userType)
         }
+      } else {
+        // Reset to default state for new day
+        setGrowthData({
+          iman: {
+            istigfar: false,
+            salam: false,
+            miswak: false,
+            quranTouch: false,
+            masnunDua: false,
+            prayerOnTime: false,
+            quranReflect: false
+          },
+          life: {}
+        })
       }
 
     } catch (error) {
@@ -173,6 +192,54 @@ const GrowthPage = () => {
       saveGrowthDataToFirestore()
     }
   }, [growthData, userType, user?.uid, loading])
+
+  // Check for date change and reset growth data for new day
+  useEffect(() => {
+    const checkDateChange = async () => {
+      const today = getTodayDateString()
+      if (today !== currentDate && !loading) {
+        // Date has changed, reset growth data and reload
+        setCurrentDate(today)
+        setGrowthData({
+          iman: {
+            istigfar: false,
+            salam: false,
+            miswak: false,
+            quranTouch: false,
+            masnunDua: false,
+            prayerOnTime: false,
+            quranReflect: false
+          },
+          life: {}
+        })
+        // Reload data for the new day
+        if (user?.uid) {
+          await loadGrowthDataFromFirestore()
+        }
+      }
+    }
+
+    // Check every minute for date change
+    const interval = setInterval(checkDateChange, 60000)
+    
+    return () => clearInterval(interval)
+  }, [currentDate, loading, user?.uid])
+
+  // Force refresh when component becomes visible (handles browser tab switching)
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (!document.hidden && user?.uid) {
+        const today = getTodayDateString()
+        if (today !== currentDate) {
+          setCurrentDate(today)
+          await loadGrowthDataFromFirestore()
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [currentDate, user?.uid])
 
   const toggleItem = (category, key) => {
     setGrowthData(prev => ({

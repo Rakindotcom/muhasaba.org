@@ -88,7 +88,13 @@ const migrateTasksData = async (userId) => {
     const parsedMissedTasks = localMissedTasks ? JSON.parse(localMissedTasks) : { mustDo: [], goodToDo: [] }
 
     const addDateToTasks = (taskObj) => {
-      const today = new Date().toISOString().split('T')[0]
+      const today = (() => {
+        const date = new Date()
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      })()
       return {
         mustDo: taskObj.mustDo.map(task => ({
           ...task,
@@ -108,7 +114,13 @@ const migrateTasksData = async (userId) => {
       todayTasks: tasksWithDates,
       missedTasks: missedTasksWithDates,
       lastUpdated: serverTimestamp(),
-      dateUpdated: new Date().toISOString().split('T')[0],
+      dateUpdated: (() => {
+        const date = new Date()
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      })(),
       migratedFrom: 'localStorage',
       migrationDate: serverTimestamp()
     })
@@ -217,7 +229,12 @@ const migratePrayerData = async (userId) => {
       const date = new Date()
       date.setDate(date.getDate() - i)
       const dateStr = date.toDateString()
-      const dateKey = date.toISOString().split('T')[0]
+      const dateKey = (() => {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      })()
 
       const localPrayerData = localStorage.getItem(`prayer-${dateStr}`)
       if (localPrayerData) {
@@ -271,7 +288,12 @@ const migrateGrowthData = async (userId) => {
       const date = new Date()
       date.setDate(date.getDate() - i)
       const dateStr = date.toDateString()
-      const dateKey = date.toISOString().split('T')[0]
+      const dateKey = (() => {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      })()
 
       const localGrowthData = localStorage.getItem(`growth-${dateStr}`)
       if (localGrowthData) {

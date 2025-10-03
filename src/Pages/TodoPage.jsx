@@ -13,6 +13,15 @@ import { db } from '../firebase'
 import { migrateAllLocalStorageToFirestore, checkForLocalData } from '../utils/taskMigration'
 
 const TodoPage = () => {
+  // Helper function to get today's date string
+  const getTodayDateString = () => {
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const [tasks, setTasks] = useState({
     mustDo: [],
     goodToDo: []
@@ -26,13 +35,9 @@ const TodoPage = () => {
   const [activeTab, setActiveTab] = useState('today') // 'today' or 'missed'
   const [showAddModal, setShowAddModal] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [currentDate, setCurrentDate] = useState(getTodayDateString())
   const { user } = useAuth()
   const { trackAction } = useTimeTracking('todo_page')
-
-  // Helper function to get today's date string
-  const getTodayDateString = () => {
-    return new Date().toISOString().split('T')[0] // YYYY-MM-DD format
-  }
 
   // Helper function to check if a task is from today
   const isTaskFromToday = (task) => {
@@ -147,6 +152,41 @@ const TodoPage = () => {
       saveTasksToFirestore()
     }
   }, [tasks, missedTasks, user?.uid, loading])
+
+  // Check for date change and reload tasks for new day
+  useEffect(() => {
+    const checkDateChange = async () => {
+      const today = getTodayDateString()
+      if (today !== currentDate && !loading) {
+        // Date has changed, reload tasks for the new day
+        setCurrentDate(today)
+        if (user?.uid) {
+          await loadTasksFromFirestore()
+        }
+      }
+    }
+
+    // Check every minute for date change
+    const interval = setInterval(checkDateChange, 60000)
+    
+    return () => clearInterval(interval)
+  }, [currentDate, loading, user?.uid])
+
+  // Force refresh when component becomes visible (handles browser tab switching)
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (!document.hidden && user?.uid) {
+        const today = getTodayDateString()
+        if (today !== currentDate) {
+          setCurrentDate(today)
+          await loadTasksFromFirestore()
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [currentDate, user?.uid])
 
   const addTask = async () => {
     if (newTask.trim()) {
@@ -357,7 +397,7 @@ const TodoPage = () => {
           <button
             onClick={() => setActiveTab('today')}
             className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'today'
-              ? 'bg-white text-blue-600 shadow-sm'
+              ? 'bg-white text-blue-600 shadow-sm border-2 border-black'
               : 'text-gray-600 hover:text-gray-800'
               }`}
           >
@@ -366,7 +406,7 @@ const TodoPage = () => {
           <button
             onClick={() => setActiveTab('missed')}
             className={`px-6 py-2 rounded-md text-sm font-medium transition-colors relative ${activeTab === 'missed'
-              ? 'bg-white text-orange-600 shadow-sm'
+              ? 'bg-white text-orange-600 shadow-sm border-2 border-black'
               : 'text-gray-600 hover:text-gray-800'
               }`}
           >

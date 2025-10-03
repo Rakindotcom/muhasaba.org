@@ -1,16 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
-
 @import "tailwindcss";
 
 @font-face {
-  font-family: "RuhulAminUnicode";
-  src: url("/RUHUL_AMIN_UNICODE.TTF") format("truetype");
+  font-family: "Kalpurush";
+  src: url("/KALPURUSH.TTF") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 * {
-  font-family: "RuhulAminUnicode", "Hind Siliguri";
+  font-family: "Kalpurush", "Hind Siliguri";
 }
 
 /* Poppins for headers */
@@ -21,7 +19,8 @@ h4,
 h5,
 h6,
 .header-font {
-  font-family: 'Anek Bangla', sans-serif;
+  font-family: 'Kalpurush', sans-serif;
+  font-weight: 700;
 }
 
 /* Ensure all checkboxes are perfectly round */

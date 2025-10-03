@@ -321,23 +321,8 @@ const MonthlyReport = ({ onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t bg-gray-50 flex justify-between">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-600 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
-          >
-            Close
-          </button>
-          
-          {reportData && (reportData.prayers.length > 0 || reportData.growth.length > 0) && (
-            <button
-              onClick={exportReport}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Download size={16} />
-              Export Report
-            </button>
-          )}
+        <div className="p-6 border-t bg-gray-50">
+          {/* Footer content removed as requested */}
         </div>
       </div>
     </div>

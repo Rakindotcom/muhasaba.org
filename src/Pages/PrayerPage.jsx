@@ -11,6 +11,15 @@ import {
 import { db } from '../firebase'
 
 const PrayerPage = () => {
+    // Helper function to get today's date string
+    const getTodayDateString = () => {
+        const today = new Date()
+        const year = today.getFullYear()
+        const month = String(today.getMonth() + 1).padStart(2, '0')
+        const day = String(today.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+    }
+
     const [prayerData, setPrayerData] = useState({
         fajr: { prayed: false, jamat: false },
         dhuhr: { prayed: false, jamat: false },
@@ -30,6 +39,7 @@ const PrayerPage = () => {
     })
 
     const [loading, setLoading] = useState(true)
+    const [currentDate, setCurrentDate] = useState(getTodayDateString())
     const { user } = useAuth()
 
     const prayerNames = {
@@ -38,11 +48,6 @@ const PrayerPage = () => {
         asr: 'আসর',
         maghrib: 'মাগরিব',
         isha: 'ইশা'
-    }
-
-    // Helper function to get today's date string
-    const getTodayDateString = () => {
-        return new Date().toISOString().split('T')[0] // YYYY-MM-DD format
     }
 
     // Save prayer data to Firestore
@@ -67,9 +72,14 @@ const PrayerPage = () => {
 
     // Helper function to get yesterday's date string
     const getYesterdayDateString = () => {
-        const yesterday = new Date()
-        yesterday.setDate(yesterday.getDate() - 1)
-        return yesterday.toISOString().split('T')[0]
+        const today = new Date()
+        const yesterday = new Date(today)
+        yesterday.setDate(today.getDate() - 1)
+        
+        const year = yesterday.getFullYear()
+        const month = String(yesterday.getMonth() + 1).padStart(2, '0')
+        const day = String(yesterday.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
     }
 
     // Helper function to format date in Bengali
@@ -130,6 +140,15 @@ const PrayerPage = () => {
             
             if (dailyDoc.exists()) {
                 setPrayerData(dailyDoc.data().prayers)
+            } else {
+                // Reset to default state for new day
+                setPrayerData({
+                    fajr: { prayed: false, jamat: false },
+                    dhuhr: { prayed: false, jamat: false },
+                    asr: { prayed: false, jamat: false },
+                    maghrib: { prayed: false, jamat: false },
+                    isha: { prayed: false, jamat: false }
+                })
             }
 
             // Load yesterday's missed prayers for qaza
@@ -158,6 +177,49 @@ const PrayerPage = () => {
             savePrayerDataToFirestore()
         }
     }, [prayerData, user?.uid, loading])
+
+    // Check for date change and reset prayer data for new day
+    useEffect(() => {
+        const checkDateChange = async () => {
+            const today = getTodayDateString()
+            if (today !== currentDate && !loading) {
+                // Date has changed, reset prayer data and reload
+                setCurrentDate(today)
+                setPrayerData({
+                    fajr: { prayed: false, jamat: false },
+                    dhuhr: { prayed: false, jamat: false },
+                    asr: { prayed: false, jamat: false },
+                    maghrib: { prayed: false, jamat: false },
+                    isha: { prayed: false, jamat: false }
+                })
+                // Reload data for the new day
+                if (user?.uid) {
+                    await loadPrayerDataFromFirestore()
+                }
+            }
+        }
+
+        // Check every minute for date change
+        const interval = setInterval(checkDateChange, 60000)
+        
+        return () => clearInterval(interval)
+    }, [currentDate, loading, user?.uid])
+
+    // Force refresh when component becomes visible (handles browser tab switching)
+    useEffect(() => {
+        const handleVisibilityChange = async () => {
+            if (!document.hidden && user?.uid) {
+                const today = getTodayDateString()
+                if (today !== currentDate) {
+                    setCurrentDate(today)
+                    await loadPrayerDataFromFirestore()
+                }
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }, [currentDate, user?.uid])
 
     const togglePrayer = (prayer, type) => {
         setPrayerData(prev => {
@@ -255,7 +317,6 @@ const PrayerPage = () => {
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">নামাজ ট্র্যাকার</h1>
                 <p className="text-gray-600 text-sm md:text-base">দিনের শেষে পর্যালোচনা</p>
                 <div className="mt-2 flex items-center justify-center gap-2 text-blue-600">
-                    <Calendar size={16} />
                     <span className="text-sm font-medium">
                         {new Date().toLocaleDateString('en-US', { 
                             weekday: 'long', 
@@ -287,8 +348,7 @@ const PrayerPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Prayer List */}
                 <div className="lg:col-span-2 bg-white rounded-xl p-4 md:p-6 mb-6 lg:mb-0 shadow-sm">
-                    <h3 className="font-semibold text-gray-800 text-lg mb-4 flex items-center gap-2">
-                        <Clock size={20} />
+                    <h3 className="font-semibold text-gray-800 text-lg mb-4">
                         আজকের নামাজ
                     </h3>
 
@@ -328,8 +388,7 @@ const PrayerPage = () => {
                 {/* Qaza Section */}
                 <div className="bg-orange-50 rounded-xl p-4 md:p-6 h-fit">
                     <h3 className="font-semibold text-gray-800 text-lg mb-2 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Moon size={20} />
+                        <div>
                             কাজা নামাজ
                         </div>
                         <span className="text-2xl font-bold text-orange-600">{getTotalQaza()}</span>

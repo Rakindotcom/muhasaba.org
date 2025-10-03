@@ -129,7 +129,6 @@ const ContactsPage = () => {
   const ContactSection = ({ title, contacts, type, icon: Icon, bgColor }) => (
     <div className={`${bgColor} rounded-xl p-4 md:p-6 mb-4 lg:mb-0`}>
       <div className="flex items-center gap-2 mb-6">
-        <Icon size={24} className="text-gray-700" />
         <h3 className="font-semibold text-gray-800 text-lg">{title}</h3>
         <span className="text-sm text-gray-600 bg-white/60 px-2 py-1 rounded-full">
           {contacts.length}
@@ -202,7 +201,6 @@ const ContactsPage = () => {
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            <MessageCircle size={20} className="inline mr-2" />
             মেসেজ যোগাযোগ
           </button>
           <button
@@ -213,7 +211,6 @@ const ContactsPage = () => {
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            <Phone size={20} className="inline mr-2" />
             কল যোগাযোগ
           </button>
         </div>
@@ -239,7 +236,6 @@ const ContactsPage = () => {
                 : 'bg-blue-500 hover:bg-blue-600'
             }`}
           >
-            <Plus size={20} />
             <span className="hidden md:inline">যোগাযোগ যোগ করুন</span>
           </button>
         </div>
