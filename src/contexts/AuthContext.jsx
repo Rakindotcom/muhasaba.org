@@ -112,7 +112,16 @@ export const AuthProvider = ({ children }) => {
 
   const resetPassword = async (email) => {
     try {
-      await sendPasswordResetEmail(auth, email);
+      // Configure action code settings for better email deliverability
+      const actionCodeSettings = {
+        // URL you want to redirect back to. The domain (www.example.com) for this
+        // URL must be in the authorized domains list in the Firebase Console.
+        url: window.location.origin + '/login',
+        // This must be true
+        handleCodeInApp: false,
+      };
+      
+      await sendPasswordResetEmail(auth, email, actionCodeSettings);
       return { success: true };
     } catch (error) {
       const errorInfo = handleFirebaseError(error);

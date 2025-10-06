@@ -287,7 +287,7 @@ const TodoPage = () => {
   const TaskSection = ({ title, tasks, section, bgColor, isMissed = false }) => (
     <div className={`${bgColor} rounded-xl p-4 md:p-6 mb-4 lg:mb-0`}>
       <div className="flex items-center gap-2 mb-4">
-        <h3 className="font-semibold text-gray-800 text-lg">{title}</h3>
+        <h3 className="font-semibold text-gray-800 text-2xl">{title}</h3>
         <span className="text-2xl text-gray-600 bg-white/60 px-2 py-1 rounded-full">
           {tasks.length}
         </span>

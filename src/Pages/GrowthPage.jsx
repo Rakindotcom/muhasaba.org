@@ -52,24 +52,24 @@ const GrowthPage = () => {
   const lifeChecklists = {
     student: [
       { key: 'deepStudy', label: 'কমপক্ষে ২ঘণ্টা ডিপ স্ট্যাডি করেছি - একাডেমিক' },
-      { key: 'careerDev', label: 'ক্যারিয়ার ডেভেলপমেন্টে সময় দিয়েছি - পডক্যাস্ট/বই/ইভেন্ট' },
+      { key: 'careerDev', label: 'ক্যারিয়ার ডেভেলপমেন্টে সময় দিয়েছি - পডকাস্ট/বই/ইভেন্ট' },
       { key: 'family', label: 'পরিবারকে সময় দিয়েছি/খোঁজখবর নিয়েছি' },
-      { key: 'exercise', label: 'অন্তত ১৫মিনিট হেঁটেছি/ফিজিকাল এক্সারসাইজ করেছি' },
-      { key: 'sleep', label: 'রাত ১১টার মধ্যে ঘুমাতে এসেছি' }
+      { key: 'exercise', label: 'অন্তত ১৫ মিনিট হেঁটেছি/ফিজিকাল এক্সারসাইজ করেছি' },
+      { key: 'sleep', label: 'রাত ১১ টার মধ্যে ঘুমাতে এসেছি' }
     ],
     professional: [
       { key: 'deepWork', label: 'কমপক্ষে ৩ ঘণ্টা ডিপ ওয়ার্ক করেছি' },
-      { key: 'professionalDev', label: 'প্রফেশনাল লাইফ ডেভেলপমেন্টে সময় দিয়েছি - পডক্যাস্ট/বই/ইভেন্ট/নেটওয়ার্কিং' },
+      { key: 'professionalDev', label: 'প্রফেশনাল লাইফ ডেভেলপমেন্টে সময় দিয়েছি - পডকাস্ট/বই/ইভেন্ট/নেটওয়ার্কিং' },
       { key: 'family', label: 'পরিবার ও আত্মীয়স্বজনকে সময় দিয়েছি/খোঁজখবর নিয়েছি' },
-      { key: 'exercise', label: 'অন্তত ১৫মিনিট হেঁটেছি/ফিজিকাল এক্সারসাইজ করেছি' },
-      { key: 'sleep', label: 'রাত ১১টার মধ্যে ঘুমাতে এসেছি' }
+      { key: 'exercise', label: 'অন্তত ১৫ মিনিট হেঁটেছি/ফিজিকাল এক্সারসাইজ করেছি' },
+      { key: 'sleep', label: 'রাত ১১ টার মধ্যে ঘুমাতে এসেছি' }
     ],
     homemaker: [
       { key: 'hobby', label: 'শখের কোনো কাজে সময় দিয়েছি' },
       { key: 'journaling', label: 'মনের কথাগুলো জার্নালিং করা' },
       { key: 'selfCare', label: 'নিজের যত্নে হেঁটেছি/ব্যায়াম করেছি অথবা বই পড়েছি/লেকচারে শুনেছি' },
       { key: 'communication', label: 'পরিবার ও আত্মীয়দের সাথে প্রয়োজনীয় যোগাযোগ' },
-      { key: 'sleep', label: 'রাত ১১টার মধ্যে ঘুমাতে এসেছি' }
+      { key: 'sleep', label: 'রাত ১১ টার মধ্যে ঘুমাতে এসেছি' }
     ]
   }
 
@@ -124,7 +124,7 @@ const GrowthPage = () => {
       const dailyGrowthRef = doc(db, 'userGrowth', user.uid, 'dailyGrowth', today)
       const dailyDoc = await getDoc(dailyGrowthRef)
 
-      if (dailyDoc.exists()) {
+      if (dailyDoc.exists() && dailyDoc.data().growthData) {
         setGrowthData(dailyDoc.data().growthData)
         if (dailyDoc.data().userType) {
           setUserType(dailyDoc.data().userType)
@@ -154,9 +154,11 @@ const GrowthPage = () => {
   // Initialize life data when user type changes
   useEffect(() => {
     setGrowthData(prev => {
+      if (!prev) return prev
+      
       const newLifeData = {}
       lifeChecklists[userType].forEach(item => {
-        newLifeData[item.key] = prev.life[item.key] || false
+        newLifeData[item.key] = (prev.life && prev.life[item.key]) || false
       })
       return {
         ...prev,
@@ -228,31 +230,41 @@ const GrowthPage = () => {
   }, [currentDate, user?.uid])
 
   const toggleItem = (category, key) => {
-    setGrowthData(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [key]: !prev[category][key]
+    setGrowthData(prev => {
+      if (!prev || !prev[category]) {
+        return prev
       }
-    }))
+      
+      return {
+        ...prev,
+        [category]: {
+          ...prev[category],
+          [key]: !prev[category][key]
+        }
+      }
+    })
   }
 
   const getScore = (category) => {
+    if (!growthData || !growthData[category]) {
+      return 0
+    }
+    
     const items = category === 'iman' ? imanChecklist : lifeChecklists[userType]
-    const completed = items.filter(item => growthData[category][item.key]).length
+    const completed = items.filter(item => growthData[category] && growthData[category][item.key]).length
     return Math.round((completed / items.length) * 100)
   }
 
   const ChecklistSection = ({ title, items, category, color }) => (
     <div className={`${color} rounded-xl p-4 md:p-6 mb-4 lg:mb-0 h-fit`}>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-semibold text-gray-800 text-lg">{title}</h3>
+        <h3 className="font-semibold text-gray-800 text-2xl">{title}</h3>
         <div className="text-2xl md:text-3xl font-bold text-gray-700">{getScore(category)}%</div>
       </div>
 
       <div className="space-y-3">
         {items.map(item => {
-          const isCompleted = growthData[category][item.key]
+          const isCompleted = growthData && growthData[category] ? growthData[category][item.key] : false
 
           return (
             <button
@@ -311,7 +323,7 @@ const GrowthPage = () => {
 
       {/* User Type Selector */}
       <div className="bg-white rounded-xl p-4 md:p-6 mb-6 shadow-sm">
-        <h3 className="font-semibold text-gray-800 text-xl mb-4">আপনার ভূমিকা নির্বাচন করুন</h3>
+        <h3 className="font-semibold text-gray-800 text-2xl mb-4">আপনার ভূমিকা নির্বাচন করুন</h3>
         <div className="flex flex-wrap gap-3">
           {Object.entries(userTypes).map(([key, label]) => (
             <button
@@ -332,7 +344,7 @@ const GrowthPage = () => {
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl p-4 mb-6 shadow-lg border border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-white text-lg">সামগ্রিক গ্রোথ স্কোর</h3>
+            <h3 className="font-semibold text-white text-2xl">সামগ্রিক গ্রোথ স্কোর</h3>
             <p className="text-2xl text-gray-300">দৈনিক গড়</p>
           </div>
 

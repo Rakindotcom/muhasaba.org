@@ -7,11 +7,6 @@ import {
   doc,
   setDoc,
   getDoc,
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  limit,
   serverTimestamp
 } from 'firebase/firestore'
 import { db } from '../firebase'
@@ -29,7 +24,7 @@ const SettingsPage = () => {
     growth: false
   })
   const [showNameModal, setShowNameModal] = useState(false)
-  const [showClearModal, setShowClearModal] = useState(false)
+
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showMonthlyReport, setShowMonthlyReport] = useState(false)
   const [tempName, setTempName] = useState('')
@@ -95,92 +90,7 @@ const SettingsPage = () => {
 
 
 
-  const clearAllData = async () => {
-    if (!user?.uid) {
-      toast.error('ডেটা মুছতে দয়া করে লগ ইন করুন')
-      return
-    }
 
-    try {
-      toast.info('সব ডেটা মুছে ফেলা হচ্ছে...')
-
-      // Clear main collections
-      const collections = [
-        'userTasks',
-        'userContacts', 
-        'userSettings',
-        'userPreferences',
-        'userPrayers',
-        'userGrowth'
-      ]
-
-      // Delete all main documents
-      for (const collectionName of collections) {
-        try {
-          const docRef = doc(db, collectionName, user.uid)
-          await setDoc(docRef, {})
-        } catch (error) {
-          console.warn(`Could not clear ${collectionName}:`, error)
-        }
-      }
-
-      // Clear subcollections by getting all documents and deleting them
-      try {
-        // Clear daily prayers subcollection
-        const prayersQuery = query(
-          collection(db, 'userPrayers', user.uid, 'dailyPrayers'),
-          orderBy('date', 'desc'),
-          limit(100)
-        )
-        const prayersSnapshot = await getDocs(prayersQuery)
-        
-        for (const prayerDoc of prayersSnapshot.docs) {
-          await setDoc(prayerDoc.ref, {})
-        }
-
-        // Clear daily growth subcollection  
-        const growthQuery = query(
-          collection(db, 'userGrowth', user.uid, 'dailyGrowth'),
-          orderBy('date', 'desc'), 
-          limit(100)
-        )
-        const growthSnapshot = await getDocs(growthQuery)
-        
-        for (const growthDoc of growthSnapshot.docs) {
-          await setDoc(growthDoc.ref, {})
-        }
-      } catch (error) {
-        console.warn('Could not clear subcollections:', error)
-      }
-
-      // Reset local state to defaults
-      setProfile({ 
-        name: user.displayName || '', 
-        email: user.email || '', 
-        userType: 'student' 
-      })
-      setNotifications({ 
-        prayer: true, 
-        tasks: true, 
-        growth: false 
-      })
-
-      // Clear localStorage
-      localStorage.clear()
-
-      setShowClearModal(false)
-      toast.success('সব ডেটা সফলভাবে মুছে ফেলা হয়েছে!')
-      
-      // Reload the page to ensure clean state
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-      
-    } catch (error) {
-      console.error('Clear data error:', error)
-      toast.error('সব ডেটা মুছতে ব্যর্থ হয়েছে। দয়া করে আবার চেষ্টা করুন।')
-    }
-  }
 
   const updateName = () => {
     if (tempName.trim()) {
@@ -225,7 +135,7 @@ const SettingsPage = () => {
         <div className="space-y-6">
           {/* Profile Section */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">অ্যাকাউন্ট</h3>
+            <h3 className="font-semibold text-gray-800 text-2xl mb-4">অ্যাকাউন্ট</h3>
             <div className="space-y-3 border">
               <SettingItem
                 icon={User}
@@ -241,7 +151,7 @@ const SettingsPage = () => {
 
           {/* App Settings */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">অ্যাপ সেটিংস</h3>
+            <h3 className="font-semibold text-gray-800 text-2xl mb-4">অ্যাপ সেটিংস</h3>
             <div className="space-y-3 border">
               <SettingItem
                 icon={Bell}
@@ -267,7 +177,7 @@ const SettingsPage = () => {
 
           {/* Reports */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">রিপোর্ট</h3>
+            <h3 className="font-semibold text-gray-800 text-2xl mb-4">রিপোর্ট</h3>
             <div className="space-y-3 border">
               <SettingItem
                 icon={BarChart3}
@@ -282,7 +192,7 @@ const SettingsPage = () => {
         <div className="space-y-6">
           {/* Billing */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">বিলিং</h3>
+            <h3 className="font-semibold text-gray-800 text-2xl mb-4">বিলিং</h3>
             <div className="border space-y-3">
               <SettingItem
                 icon={CreditCard}
@@ -297,7 +207,7 @@ const SettingsPage = () => {
 
           {/* Account Actions */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg mb-4">অ্যাকাউন্ট অ্যাকশন</h3>
+            <h3 className="font-semibold text-gray-800 text-2xl mb-4">অ্যাকাউন্ট অ্যাকশন</h3>
             <div className="space-y-3">
               <button
                 onClick={() => setShowSignOutModal(true)}
@@ -317,26 +227,7 @@ const SettingsPage = () => {
             </div>
           </div>
 
-          {/* Danger Zone */}
-          <div>
-            <div className="space-y-3">
-              <button
-                onClick={() => setShowClearModal(true)}
-                className="w-full flex items-center gap-4 p-4 md:p-6 bg-red-50 rounded-lg hover:bg-red-100 transition-colors border border-red-200"
-              >
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <LogOut size={24} className="text-red-600" />
-                </div>
 
-                <div className="flex-1 text-left">
-                  <div className="font-medium text-red-800 text-xl">সব ডেটা মুছে ফেলুন</div>
-                  <div className="text-xl text-red-600 mt-1">এটি আপনার সব ডেটা স্থায়ীভাবে মুছে দেবে</div>
-                </div>
-
-                <ChevronRight size={20} className="text-red-400" />
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -440,51 +331,7 @@ const SettingsPage = () => {
         </div>
       )}
 
-      {/* Clear Data Confirmation Modal */}
-      {showClearModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-red-600">সব ডেটা মুছে ফেলুন</h3>
-              <button
-                onClick={() => setShowClearModal(false)}
-                className="text-gray-400 hover:text-gray-600 p-1"
-              >
-                <X size={20} />
-              </button>
-            </div>
 
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                আপনি কি নিশ্চিত যে আপনি সব ডেটা মুছে ফেলতে চান? এটি স্থায়ীভাবে মুছে দেবে:
-              </p>
-              <ul className="text-xl text-gray-600 list-disc list-inside space-y-1">
-                <li>সব কাজ এবং অগ্রগতি</li>
-                <li>নামাজ ট্র্যাকিং ডেটা</li>
-                <li>উন্নতির স্কোর</li>
-                <li>যোগাযোগের তথ্য</li>
-                <li>সব সেটিংস এবং পছন্দসমূহ</li>
-              </ul>
-              <p className="text-red-600 font-medium text-xl">এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না!</p>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={() => setShowClearModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                >
-                  বাতিল
-                </button>
-                <button
-                  onClick={clearAllData}
-                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                >
-                  সব ডেটা মুছে ফেলুন
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Monthly Report Modal */}
       {showMonthlyReport && (

@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { Check, X, Clock, Moon, Calendar } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { useAuth } from '../contexts/AuthContext'
-import { 
-  doc, 
-  setDoc, 
-  getDoc, 
-  serverTimestamp 
+import {
+    doc,
+    setDoc,
+    getDoc,
+    serverTimestamp
 } from 'firebase/firestore'
 import { db } from '../firebase'
 
@@ -56,7 +56,7 @@ const PrayerPage = () => {
 
         try {
             const today = getTodayDateString()
-            
+
             // Save today's prayer data
             const dailyPrayerRef = doc(db, 'userPrayers', user.uid, 'dailyPrayers', today)
             await setDoc(dailyPrayerRef, {
@@ -75,7 +75,7 @@ const PrayerPage = () => {
         const today = new Date()
         const yesterday = new Date(today)
         yesterday.setDate(today.getDate() - 1)
-        
+
         const year = yesterday.getFullYear()
         const month = String(yesterday.getMonth() + 1).padStart(2, '0')
         const day = String(yesterday.getDate()).padStart(2, '0')
@@ -85,11 +85,11 @@ const PrayerPage = () => {
     // Helper function to format date in Bengali
     const formatDateInBengali = (dateString) => {
         const date = new Date(dateString)
-        return date.toLocaleDateString('bn-BD', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+        return date.toLocaleDateString('bn-BD', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         })
     }
 
@@ -107,9 +107,13 @@ const PrayerPage = () => {
                 const missedPrayers = {}
 
                 // Find missed prayers from yesterday
-                Object.entries(yesterdayPrayers).forEach(([prayerName, prayerStatus]) => {
-                    missedPrayers[prayerName] = !prayerStatus.prayed
-                })
+                if (yesterdayPrayers) {
+                    Object.entries(yesterdayPrayers).forEach(([prayerName, prayerStatus]) => {
+                        if (prayerStatus && typeof prayerStatus === 'object') {
+                            missedPrayers[prayerName] = !prayerStatus.prayed
+                        }
+                    })
+                }
 
                 return {
                     prayers: missedPrayers,
@@ -133,12 +137,12 @@ const PrayerPage = () => {
 
         try {
             const today = getTodayDateString()
-            
+
             // Load today's prayer data
             const dailyPrayerRef = doc(db, 'userPrayers', user.uid, 'dailyPrayers', today)
             const dailyDoc = await getDoc(dailyPrayerRef)
-            
-            if (dailyDoc.exists()) {
+
+            if (dailyDoc.exists() && dailyDoc.data().prayers) {
                 setPrayerData(dailyDoc.data().prayers)
             } else {
                 // Reset to default state for new day
@@ -201,7 +205,7 @@ const PrayerPage = () => {
 
         // Check every minute for date change
         const interval = setInterval(checkDateChange, 60000)
-        
+
         return () => clearInterval(interval)
     }, [currentDate, loading, user?.uid])
 
@@ -223,6 +227,8 @@ const PrayerPage = () => {
 
     const togglePrayer = (prayer, type) => {
         setPrayerData(prev => {
+            if (!prev || !prev[prayer]) return prev
+
             const currentValue = prev[prayer][type]
             const newValue = !currentValue
 
@@ -262,9 +268,13 @@ const PrayerPage = () => {
     }
 
     const getStats = () => {
+        if (!prayerData) {
+            return { totalPrayed: 0, totalJamat: 0, totalMissed: 5 }
+        }
+
         const prayers = Object.values(prayerData)
-        const totalPrayed = prayers.filter(p => p.prayed).length
-        const totalJamat = prayers.filter(p => p.jamat).length
+        const totalPrayed = prayers.filter(p => p && p.prayed).length
+        const totalJamat = prayers.filter(p => p && p.jamat).length
         const totalMissed = 5 - totalPrayed
 
         return { totalPrayed, totalJamat, totalMissed }
@@ -273,12 +283,12 @@ const PrayerPage = () => {
 
 
     const getTotalQaza = () => {
-        if (!qazaData.prayers) return 0
+        if (!qazaData || !qazaData.prayers) return 0
         return Object.values(qazaData.prayers).filter(missed => missed).length
     }
 
     const prayQaza = async (prayer) => {
-        if (qazaData.prayers[prayer]) {
+        if (qazaData && qazaData.prayers && qazaData.prayers[prayer]) {
             const updatedQazaData = {
                 ...qazaData,
                 prayers: {
@@ -286,18 +296,16 @@ const PrayerPage = () => {
                     [prayer]: false
                 }
             }
-            
+
             // Update local state immediately
             setQazaData(updatedQazaData)
-            
+
             // Show success message
             toast.success(`${prayerNames[prayer]} কাজা নামাজ সম্পন্ন হয়েছে`)
         }
     }
 
 
-
-    const { totalPrayed, totalJamat, totalMissed } = getStats()
 
     // Show loading state
     if (loading) {
@@ -311,6 +319,8 @@ const PrayerPage = () => {
         )
     }
 
+    const { totalPrayed, totalJamat, totalMissed } = getStats()
+
     return (
         <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
             <div className="text-center mb-6 md:mb-8">
@@ -318,11 +328,11 @@ const PrayerPage = () => {
                 <p className="text-gray-600 text-2xl md:text-lg">দিনের শেষে পর্যালোচনা</p>
                 <div className="mt-2 flex items-center justify-center gap-2 text-blue-600">
                     <span className="text-2xl font-medium">
-                        {new Date().toLocaleDateString('en-US', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
+                        {new Date().toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
                         })}
                     </span>
                 </div>
@@ -348,53 +358,57 @@ const PrayerPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Prayer List */}
                 <div className="lg:col-span-2 bg-white rounded-xl p-4 md:p-6 mb-6 lg:mb-0 shadow-sm">
-                    <h3 className="font-semibold text-gray-800 text-lg mb-4">
+                    <h3 className="font-semibold text-gray-800 text-2xl mb-4">
                         আজকের নামাজ
                     </h3>
 
                     <div className="space-y-3">
-                        {Object.entries(prayerNames).map(([key, name]) => (
-                            <div key={key} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <span className="font-medium text-gray-800 mb-2 md:mb-0 text-lg">{name}</span>
+                        {Object.entries(prayerNames).map(([key, name]) => {
+                            const prayerStatus = prayerData && prayerData[key] ? prayerData[key] : { prayed: false, jamat: false }
 
-                                <div className="flex gap-2 md:gap-3">
-                                    <button
-                                        onClick={() => togglePrayer(key, 'prayed')}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-2xl font-medium transition-all ${prayerData[key].prayed
-                                            ? 'bg-green-100 text-green-700 scale-105'
-                                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                                            }`}
-                                    >
-                                        {prayerData[key].prayed ? <Check size={16} /> : <X size={16} />}
-                                        পড়েছি
-                                    </button>
+                            return (
+                                <div key={key} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <span className="font-medium text-gray-800 mb-2 md:mb-0 text-2xl">{name}</span>
 
-                                    <button
-                                        onClick={() => togglePrayer(key, 'jamat')}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-2xl font-medium transition-all ${prayerData[key].jamat
-                                            ? 'bg-blue-100 text-blue-700 scale-105'
-                                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                                            }`}
-                                    >
-                                        {prayerData[key].jamat ? <Check size={16} /> : <X size={16} />}
-                                        জামাত
-                                    </button>
+                                    <div className="flex gap-2 md:gap-3">
+                                        <button
+                                            onClick={() => togglePrayer(key, 'prayed')}
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-base font-medium transition-all ${prayerStatus.prayed
+                                                ? 'bg-green-100 text-green-700 scale-105'
+                                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                                }`}
+                                        >
+                                            {prayerStatus.prayed ? <Check size={16} /> : <X size={16} />}
+                                            পড়েছি
+                                        </button>
+
+                                        <button
+                                            onClick={() => togglePrayer(key, 'jamat')}
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-base font-medium transition-all ${prayerStatus.jamat
+                                                ? 'bg-blue-100 text-blue-700 scale-105'
+                                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                                }`}
+                                        >
+                                            {prayerStatus.jamat ? <Check size={16} /> : <X size={16} />}
+                                            জামাত
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </div>
 
                 {/* Qaza Section */}
                 <div className="bg-orange-50 rounded-xl p-4 md:p-6 h-fit">
-                    <h3 className="font-semibold text-gray-800 text-lg mb-2 flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-800 text-2xl mb-2 flex items-center justify-between">
                         <div>
                             কাজা নামাজ
                         </div>
                         <span className="text-2xl font-bold text-orange-600">{getTotalQaza()}</span>
                     </h3>
 
-                    {qazaData.date && (
+                    {qazaData && qazaData.date && (
                         <div className="mb-4 text-center">
                             <p className="text-2xl text-gray-600 bg-white/50 rounded-lg px-2 py-1">
                                 {formatDateInBengali(qazaData.date)} এর মিসড নামাজ
@@ -409,7 +423,7 @@ const PrayerPage = () => {
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {Object.entries(qazaData.prayers).map(([prayer, missed]) => (
+                            {qazaData && qazaData.prayers && Object.entries(qazaData.prayers).map(([prayer, missed]) => (
                                 missed && (
                                     <div key={prayer} className="flex items-center justify-between bg-white/70 rounded-lg p-3">
                                         <span className="font-medium text-gray-800">{prayerNames[prayer]}</span>

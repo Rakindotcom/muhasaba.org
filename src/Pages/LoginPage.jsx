@@ -102,7 +102,9 @@ const LoginPage = ({ onSwitchToSignup }) => {
     setResetLoading(true);
     try {
       await resetPassword(email);
-      toast.success('পাসওয়ার্ড রিসেট লিংক আপনার ইমেইলে পাঠানো হয়েছে');
+      toast.success('পাসওয়ার্ড রিসেট লিংক পাঠানো হয়েছে! ইমেইল না পেলে স্প্যাম/জাঙ্ক ফোল্ডার চেক করুন।', {
+        autoClose: 8000
+      });
     } catch (error) {
       console.error('Password reset error:', error);
       let errorMessage = 'পাসওয়ার্ড রিসেট করতে ব্যর্থ';
