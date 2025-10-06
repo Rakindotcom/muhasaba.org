@@ -5,10 +5,11 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   updateProfile,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  signInWithPopup
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { auth, db, googleProvider } from '../firebase';
 import { handleFirebaseError } from '../utils/firebaseErrorHandler';
 import { registerDeviceSession, removeDeviceSession } from '../utils/deviceManager';
 
@@ -99,6 +100,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return result;
+    } catch (error) {
+      const errorInfo = handleFirebaseError(error);
+      throw new Error(errorInfo.message);
+    }
+  };
+
   const resetPassword = async (email) => {
     try {
       await sendPasswordResetEmail(auth, email);
@@ -151,6 +162,7 @@ export const AuthProvider = ({ children }) => {
     user,
     signup,
     login,
+    loginWithGoogle,
     resetPassword,
     logout,
     trackActivity,
