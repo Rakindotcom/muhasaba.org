@@ -98,7 +98,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
       <div className="max-w-sm w-full bg-white rounded-xl shadow-lg p-6 mx-auto">
         <div className="text-center mb-4">
           <h1 className="text-xl font-bold text-gray-900 mb-1">স্বাগতম</h1>
-          <p className="text-sm text-gray-600">চালিয়ে যেতে সাইন ইন করুন</p>
+          <p className="text-2xl text-gray-600">চালিয়ে যেতে সাইন ইন করুন</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -108,7 +108,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-2xl"
               placeholder="ইমেইল ঠিকানা"
               required
             />
@@ -120,7 +120,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-2xl"
               placeholder="পাসওয়ার্ড"
               required
             />
@@ -136,7 +136,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm font-medium mt-4"
+            className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-lg font-medium mt-4"
           >
             {loading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -153,7 +153,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
           <button
             onClick={handleForgotPassword}
             disabled={resetLoading}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 mx-auto"
+            className="text-lg text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 mx-auto"
           >
             {resetLoading ? (
               <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></div>
@@ -165,7 +165,7 @@ const LoginPage = ({ onSwitchToSignup }) => {
         </div>
 
         <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-2xl text-gray-600">
             কোন অ্যাকাউন্ট নেই?{' '}
             <button
               onClick={onSwitchToSignup}

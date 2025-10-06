@@ -168,7 +168,7 @@ const TodoPage = () => {
 
     // Check every minute for date change
     const interval = setInterval(checkDateChange, 60000)
-    
+
     return () => clearInterval(interval)
   }, [currentDate, loading, user?.uid])
 
@@ -288,7 +288,7 @@ const TodoPage = () => {
     <div className={`${bgColor} rounded-xl p-4 md:p-6 mb-4 lg:mb-0`}>
       <div className="flex items-center gap-2 mb-4">
         <h3 className="font-semibold text-gray-800 text-lg">{title}</h3>
-        <span className="text-sm text-gray-600 bg-white/60 px-2 py-1 rounded-full">
+        <span className="text-2xl text-gray-600 bg-white/60 px-2 py-1 rounded-full">
           {tasks.length}
         </span>
       </div>
@@ -299,12 +299,12 @@ const TodoPage = () => {
             {isMissed ? (
               <>
                 <Clock size={32} className="mx-auto mb-2 opacity-50" />
-                <p className="text-sm">কোন মিসড কাজ নেই</p>
+                <p className="text-2xl">কোন মিসড কাজ নেই</p>
               </>
             ) : (
               <>
                 <FileText size={32} className="mx-auto mb-2 opacity-50" />
-                <p className="text-sm">এখনো কোন কাজ যোগ করা হয়নি</p>
+                <p className="text-2xl">এখনো কোন কাজ যোগ করা হয়নি</p>
               </>
             )}
           </div>
@@ -322,13 +322,13 @@ const TodoPage = () => {
               </button>
 
               <div className="flex-1">
-                <span className={`text-sm md:text-base transition-all block ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'
+                <span className={`text-2xl md:text-lg transition-all block ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'
                   }`}>
                   {task.text}
                 </span>
                 {isMissed && task.dateCreated && (
-                  <span className="text-xs text-gray-500 mt-1 block">
-                    তৈরি: {new Date(task.dateCreated).toLocaleDateString('en-US', {
+                  <span className="text-2xl text-gray-500 mt-1 block">
+                    যেদিন করতে চেয়েছিলামঃ {new Date(task.dateCreated).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
                       year: 'numeric'
@@ -341,10 +341,10 @@ const TodoPage = () => {
                 {isMissed && (
                   <button
                     onClick={() => moveTaskToToday(task, section)}
-                    className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
+                    className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors text-lg font-medium"
                     title="আজকে নিয়ে যান"
                   >
-                    আজকে
+                    আজকে নিয়ে যান
                   </button>
                 )}
                 <button
@@ -378,8 +378,8 @@ const TodoPage = () => {
       <div className="text-center mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">দৈনিক কাজসমূহ</h1>
         <div className="flex flex-col items-center gap-1">
-          <p className="text-gray-600 text-sm md:text-base">দিনের শুরুর পরিকল্পনা</p>
-          <p className="text-blue-600 font-medium text-sm">
+          <p className="text-gray-600 text-2xl md:text-lg">দিনের শুরুর পরিকল্পনা</p>
+          <p className="text-blue-600 font-medium text-2xl">
             {new Date().toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
@@ -396,7 +396,7 @@ const TodoPage = () => {
         <div className="bg-gray-100 rounded-lg p-1 flex">
           <button
             onClick={() => setActiveTab('today')}
-            className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'today'
+            className={`px-6 py-2 rounded-md text-lg font-medium transition-colors ${activeTab === 'today'
               ? 'bg-white text-blue-600 shadow-sm border-2 border-black'
               : 'text-gray-600 hover:text-gray-800'
               }`}
@@ -405,14 +405,14 @@ const TodoPage = () => {
           </button>
           <button
             onClick={() => setActiveTab('missed')}
-            className={`px-6 py-2 rounded-md text-sm font-medium transition-colors relative ${activeTab === 'missed'
+            className={`px-6 py-2 rounded-md text-lg font-medium transition-colors relative ${activeTab === 'missed'
               ? 'bg-white text-orange-600 shadow-sm border-2 border-black'
               : 'text-gray-600 hover:text-gray-800'
               }`}
           >
             মিসড কাজ
             {(missedTasks.mustDo.length + missedTasks.goodToDo.length) > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-2xl rounded-full w-5 h-5 flex items-center justify-center">
                 {missedTasks.mustDo.length + missedTasks.goodToDo.length}
               </span>
             )}
@@ -446,11 +446,11 @@ const TodoPage = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ক্যাটেগরি</label>
+                <label className="block text-lg font-medium text-gray-700 mb-2">ক্যাটেগরি</label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setActiveSection('mustDo')}
-                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeSection === 'mustDo'
+                    className={`flex-1 px-4 py-2 rounded-lg text-lg font-medium transition-colors ${activeSection === 'mustDo'
                       ? 'bg-red-100 text-red-700 border-2 border-red-300'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-2 border-transparent'
                       }`}
@@ -459,7 +459,7 @@ const TodoPage = () => {
                   </button>
                   <button
                     onClick={() => setActiveSection('goodToDo')}
-                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeSection === 'goodToDo'
+                    className={`flex-1 px-4 py-2 rounded-lg text-lg font-medium transition-colors ${activeSection === 'goodToDo'
                       ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-2 border-transparent'
                       }`}
@@ -470,7 +470,7 @@ const TodoPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">কাজের বিবরণ</label>
+                <label className="block text-lg font-medium text-gray-700 mb-2">কাজের বিবরণ</label>
                 <input
                   type="text"
                   value={newTask}

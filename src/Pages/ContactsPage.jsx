@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Plus, MessageCircle, Phone, Trash2, User } from 'lucide-react'
+import { MessageCircle, Phone, Trash2, User, Plus } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'react-toastify'
-import { 
-  doc, 
-  setDoc, 
-  getDoc, 
-  onSnapshot, 
-  serverTimestamp 
+import {
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp
 } from 'firebase/firestore'
 import { db } from '../firebase'
 
@@ -20,6 +19,7 @@ const ContactsPage = () => {
   const [activeSection, setActiveSection] = useState('message')
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
   const { user } = useAuth()
 
   // Save contacts to Firestore
@@ -71,104 +71,47 @@ const ContactsPage = () => {
     }
   }, [user?.uid])
 
-  // Save data to Firestore whenever contacts change
+  // Auto-save when contacts data changes
   useEffect(() => {
-    if (!loading && user?.uid && (contacts.message.length > 0 || contacts.call.length > 0)) {
+    if (!loading && user?.uid) {
       saveContactsToFirestore(contacts)
     }
-  }, [contacts, loading, user?.uid])
+  }, [contacts, user?.uid, loading])
 
-  // Real-time sync with Firestore
-  useEffect(() => {
-    if (!user?.uid) return
-
-    const userContactsRef = doc(db, 'userContacts', user.uid)
-    const unsubscribe = onSnapshot(userContactsRef, (doc) => {
-      if (doc.exists() && doc.data().contacts && !loading) {
-        const serverContacts = doc.data().contacts
-        if (JSON.stringify(serverContacts) !== JSON.stringify(contacts)) {
-          setContacts(serverContacts)
-        }
-      }
-    })
-
-    return () => unsubscribe()
-  }, [user?.uid, loading])
-
-  const addContact = async () => {
+  const addContact = () => {
     if (newContact.trim()) {
       const contact = {
         id: Date.now(),
         name: newContact.trim(),
         createdAt: new Date().toISOString()
       }
-      
+
       const updatedContacts = {
         ...contacts,
         [activeSection]: [...contacts[activeSection], contact]
       }
-      
+
       setContacts(updatedContacts)
       setNewContact('')
-      
-      // Save to Firestore
-      await saveContactsToFirestore(updatedContacts)
+      setShowAddModal(false)
     }
   }
 
-  const deleteContact = async (id, type) => {
+  const deleteContact = (id, type) => {
     const updatedContacts = {
       ...contacts,
       [type]: contacts[type].filter(contact => contact.id !== id)
     }
-    
+
     setContacts(updatedContacts)
-    await saveContactsToFirestore(updatedContacts)
   }
 
-  const ContactSection = ({ title, contacts, type, icon: Icon, bgColor }) => (
-    <div className={`${bgColor} rounded-xl p-4 md:p-6 mb-4 lg:mb-0`}>
-      <div className="flex items-center gap-2 mb-6">
-        <h3 className="font-semibold text-gray-800 text-lg">{title}</h3>
-        <span className="text-sm text-gray-600 bg-white/60 px-2 py-1 rounded-full">
-          {contacts.length}
-        </span>
-      </div>
-      
-      <div className="space-y-3">
-        {contacts.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <Icon size={48} className="mx-auto mb-4 opacity-50" />
-            <p className="text-sm">এখনো কোন যোগাযোগ যোগ করা হয়নি</p>
-          </div>
-        ) : (
-          contacts.map(contact => (
-            <div key={contact.id} className="flex items-center gap-3 bg-white/70 rounded-lg p-3 md:p-4 hover:bg-white/90 transition-colors">
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <User size={18} className="text-gray-600" />
-              </div>
-              
-              <span className="flex-1 text-sm md:text-base text-gray-800">
-                {contact.name}
-              </span>
-              
-              <button
-                onClick={() => deleteContact(contact.id, type)}
-                className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  )
+
 
   // Show loading state
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
+      <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">আপনার যোগাযোগ লোড হচ্ছে...</p>
@@ -178,87 +121,168 @@ const ContactsPage = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
-      <div className="text-center mb-6 md:mb-8">
+    <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
+      <div className="text-center mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">জরুরি যোগাযোগ</h1>
-        <p className="text-gray-600 text-sm md:text-base">গুরুত্বপূর্ণ ব্যক্তিদের দ্রুত অ্যাক্সেস</p>
-        {syncing && (
-          <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mt-2">
-            <div className="animate-spin rounded-full h-3 w-3 border-b border-gray-400"></div>
-            <span>সিঙ্ক হচ্ছে...</span>
-          </div>
-        )}
+        <div className="flex flex-col items-center gap-1">
+          <p className="text-gray-600 text-2xl md:text-lg">গুরুত্বপূর্ণ ব্যক্তিদের দ্রুত অ্যাক্সেস</p>
+          {syncing && (
+            <div className="flex items-center justify-center gap-2 text-2xl text-gray-500 mt-2">
+              <div className="animate-spin rounded-full h-3 w-3 border-b border-gray-400"></div>
+              <span>সিঙ্ক হচ্ছে...</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Section Selector */}
-      <div className="bg-white rounded-xl p-4 md:p-6 mb-6 md:mb-8 shadow-sm">
-        <div className="flex flex-col md:flex-row gap-3">
+      {/* Tab Navigation */}
+      <div className="flex justify-center mb-6">
+        <div className="bg-gray-100 rounded-lg p-1 flex">
           <button
             onClick={() => setActiveSection('message')}
-            className={`flex-1 py-3 rounded-lg text-sm md:text-base font-medium transition-all ${
-              activeSection === 'message' 
-                ? 'bg-green-100 text-green-700 scale-105' 
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`px-6 py-2 rounded-md text-lg font-medium transition-colors ${activeSection === 'message'
+                ? 'bg-white text-green-600 shadow-sm border-2 border-black'
+                : 'text-gray-600 hover:text-gray-800'
+              }`}
           >
             মেসেজ যোগাযোগ
           </button>
           <button
             onClick={() => setActiveSection('call')}
-            className={`flex-1 py-3 rounded-lg text-sm md:text-base font-medium transition-all ${
-              activeSection === 'call' 
-                ? 'bg-blue-100 text-blue-700 scale-105' 
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`px-6 py-2 rounded-md text-lg font-medium transition-colors ${activeSection === 'call'
+                ? 'bg-white text-blue-600 shadow-sm border-2 border-black'
+                : 'text-gray-600 hover:text-gray-800'
+              }`}
           >
             কল যোগাযোগ
           </button>
         </div>
-        
-        <div className="flex flex-col md:flex-row gap-3 mt-4">
-          <input
-            type="text"
-            value={newContact}
-            onChange={(e) => setNewContact(e.target.value)}
-            placeholder={`${activeSection === 'message' ? 'মেসেজ' : 'কল'} যোগাযোগ যোগ করুন...`}
-            className={`flex-1 px-4 py-3 border-2 bg-white rounded-lg focus:outline-none text-sm md:text-base transition-all ${
-              activeSection === 'message' 
-                ? 'border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 text-green-700 placeholder-green-400' 
-                : 'border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-blue-700 placeholder-blue-400'
-            }`}
-            onKeyDown={(e) => e.key === 'Enter' && addContact()}
-          />
-          <button
-            onClick={addContact}
-            className={`text-white px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 ${
-              activeSection === 'message' 
-                ? 'bg-green-500 hover:bg-green-600' 
-                : 'bg-blue-500 hover:bg-blue-600'
-            }`}
-          >
-            <span className="hidden md:inline">যোগাযোগ যোগ করুন</span>
-          </button>
+      </div>
+
+
+
+      {/* Contact List */}
+      <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-6">
+          <h3 className="font-semibold text-gray-800 text-2xl">
+            {activeSection === 'message' ? 'যাদের মেসেজ করতে হবে' : 'যাদের কল করতে হবে'}
+          </h3>
+          <span className="text-2xl text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+            {contacts[activeSection].length}
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {contacts[activeSection].length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              {activeSection === 'message' ? (
+                <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
+              ) : (
+                <Phone size={48} className="mx-auto mb-4 opacity-50" />
+              )}
+              <p className="text-2xl">এখনো কোন যোগাযোগ যোগ করা হয়নি</p>
+            </div>
+          ) : (
+            contacts[activeSection].map(contact => (
+              <div key={contact.id} className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 md:p-4 hover:bg-gray-100 transition-colors">
+                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                  <User size={18} className="text-gray-600" />
+                </div>
+
+                <span className="flex-1 text-2xl md:text-lg text-gray-800">
+                  {contact.name}
+                </span>
+
+                <button
+                  onClick={() => deleteContact(contact.id, activeSection)}
+                  className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
-      {/* Contact Lists */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ContactSection
-          title="যাদের মেসেজ করতে হবে"
-          contacts={contacts.message}
-          type="message"
-          icon={MessageCircle}
-          bgColor="bg-green-50"
-        />
-        
-        <ContactSection
-          title="যাদের কল করতে হবে"
-          contacts={contacts.call}
-          type="call"
-          icon={Phone}
-          bgColor="bg-blue-50"
-        />
-      </div>
+      {/* Floating Add Button */}
+      <button
+        onClick={() => setShowAddModal(true)}
+        className="fixed bottom-33 md:bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40 text-2xl font-bold"
+      >
+        +
+      </button>
+
+      {/* Add Contact Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">নতুন যোগাযোগ যোগ করুন</h3>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1 text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-lg font-medium text-gray-700 mb-2">ক্যাটেগরি</label>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setActiveSection('message')}
+                    className={`flex-1 px-4 py-2 rounded-lg text-lg font-medium transition-colors ${activeSection === 'message'
+                      ? 'bg-green-100 text-green-700 border-2 border-green-300'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-2 border-transparent'
+                      }`}
+                  >
+                    মেসেজ যোগাযোগ
+                  </button>
+                  <button
+                    onClick={() => setActiveSection('call')}
+                    className={`flex-1 px-4 py-2 rounded-lg text-lg font-medium transition-colors ${activeSection === 'call'
+                      ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-2 border-transparent'
+                      }`}
+                  >
+                    কল যোগাযোগ
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-lg font-medium text-gray-700 mb-2">যোগাযোগের নাম</label>
+                <input
+                  type="text"
+                  value={newContact}
+                  onChange={(e) => setNewContact(e.target.value)}
+                  placeholder={`${activeSection === 'message' ? 'মেসেজ' : 'কল'} যোগাযোগের নাম লিখুন...`}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onKeyDown={(e) => e.key === 'Enter' && addContact()}
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  বাতিল
+                </button>
+                <button
+                  onClick={addContact}
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                >
+                  যোগাযোগ যোগ করুন
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

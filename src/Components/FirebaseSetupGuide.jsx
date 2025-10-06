@@ -12,16 +12,16 @@ const FirebaseSetupGuide = ({ onClose }) => {
         
         <div className="space-y-4 mb-6">
           <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <div className="flex items-center text-green-800 text-sm">
+            <div className="flex items-center text-green-800 text-lg">
               <CheckCircle className="w-4 h-4 mr-2" />
               Firebase is connected successfully!
             </div>
           </div>
           
-          <div className="text-sm text-gray-600">
+          <div className="text-lg text-gray-600">
             <p className="mb-3">To enable user registration, you need to:</p>
             
-            <ol className="list-decimal list-inside space-y-2 text-sm">
+            <ol className="list-decimal list-inside space-y-2 text-lg">
               <li>Go to Firebase Console</li>
               <li>Select your project: <span className="font-mono bg-gray-100 px-1 rounded">muhasaba-40225</span></li>
               <li>Click <strong>Authentication</strong> → <strong>Sign-in method</strong></li>
@@ -36,7 +36,7 @@ const FirebaseSetupGuide = ({ onClose }) => {
             href="https://console.firebase.google.com/project/muhasaba-40225/authentication/providers"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2 text-sm font-medium"
+            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2 text-lg font-medium"
           >
             <ExternalLink className="w-4 h-4" />
             <span>Open Firebase Console</span>
@@ -44,7 +44,7 @@ const FirebaseSetupGuide = ({ onClose }) => {
           
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 text-sm font-medium"
+            className="px-4 py-2 text-gray-600 hover:text-gray-800 text-lg font-medium"
           >
             Close
           </button>

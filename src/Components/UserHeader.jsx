@@ -31,10 +31,10 @@ const UserHeader = () => {
                 <User className="w-4 h-4 text-white" />
               </div>
               <div>
-                <div className="text-sm font-medium text-gray-900">
+                <div className="text-lg font-medium text-gray-900">
                   {user?.displayName || 'User'}
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="text-base text-gray-500">
                   {user?.email}
                 </div>
               </div>

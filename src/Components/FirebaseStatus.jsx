@@ -26,7 +26,7 @@ const FirebaseStatus = () => {
 
   if (status === 'checking') {
     return (
-      <div className="fixed top-4 right-4 bg-blue-100 border border-blue-400 text-blue-700 px-3 py-2 rounded-lg text-sm z-40">
+      <div className="fixed top-4 right-4 bg-blue-100 border border-blue-400 text-blue-700 px-3 py-2 rounded-lg text-lg z-40">
         🔄 Checking Firebase...
       </div>
     );
@@ -35,7 +35,7 @@ const FirebaseStatus = () => {
   if (status === 'ready') {
     return (
       <div className="fixed top-4 right-4 z-40">
-        <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-2 rounded-lg text-sm flex items-center space-x-2">
+        <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-2 rounded-lg text-lg flex items-center space-x-2">
           <CheckCircle className="w-4 h-4" />
           <span>Firebase Ready</span>
         </div>
@@ -46,7 +46,7 @@ const FirebaseStatus = () => {
   return (
     <div className="fixed top-4 right-4 z-40">
       <div 
-        className="bg-orange-100 border border-orange-400 text-orange-700 px-3 py-2 rounded-lg text-sm cursor-pointer"
+        className="bg-orange-100 border border-orange-400 text-orange-700 px-3 py-2 rounded-lg text-lg cursor-pointer"
         onClick={() => setShowDetails(!showDetails)}
       >
         <div className="flex items-center space-x-2">
@@ -55,7 +55,7 @@ const FirebaseStatus = () => {
         </div>
         
         {showDetails && (
-          <div className="mt-2 p-2 bg-white rounded border text-xs">
+          <div className="mt-2 p-2 bg-white rounded border text-base">
             <p className="mb-2">Enable Email/Password auth in Firebase Console</p>
             <a
               href="https://console.firebase.google.com/project/muhasaba-40225/authentication/providers"

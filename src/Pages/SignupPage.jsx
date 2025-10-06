@@ -116,7 +116,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
               <UserPlus className="w-8 h-8 text-green-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">অ্যাকাউন্ট তৈরি হয়েছে!</h3>
-            <p className="text-gray-600 text-sm mb-4">
+            <p className="text-gray-600 text-2xl mb-4">
               আপনার নতুন অ্যাকাউন্ট দিয়ে সাইন ইন করতে রিডাইরেক্ট করা হচ্ছে...
             </p>
             <div className="flex items-center justify-center">
@@ -130,7 +130,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
       <div className="max-w-sm w-full bg-white rounded-xl shadow-lg p-6 mx-auto">
         <div className="text-center mb-4">
           <h1 className="text-xl font-bold text-gray-900 mb-1">অ্যাকাউন্ট তৈরি করুন</h1>
-          <p className="text-sm text-gray-600">সব তথ্য পূরণ করুন</p>
+          <p className="text-2xl text-gray-600">সব তথ্য পূরণ করুন</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -141,7 +141,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
               name="displayName"
               value={formData.displayName}
               onChange={handleChange}
-              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-2xl"
               placeholder="পূর্ণ নাম"
               required
             />
@@ -154,7 +154,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-2xl"
               placeholder="ইমেইল ঠিকানা"
               required
             />
@@ -167,7 +167,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-2xl"
               placeholder="পাসওয়ার্ড তৈরি করুন"
               required
             />
@@ -187,7 +187,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+              className="w-full pl-9 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-2xl"
               placeholder="পাসওয়ার্ড নিশ্চিত করুন"
               required
             />
@@ -203,7 +203,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
           <button
             type="submit"
             disabled={loading || redirecting}
-            className="w-full bg-green-600 text-white py-2.5 px-4 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm font-medium mt-6"
+            className="w-full bg-green-600 text-white py-2.5 px-4 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-lg font-medium mt-6"
           >
             {loading ? (
               <>
@@ -224,7 +224,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
           </button>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-2xl text-gray-600">
               ইতিমধ্যে একটি অ্যাকাউন্ট আছে?{' '}
               <button
                 type="button"

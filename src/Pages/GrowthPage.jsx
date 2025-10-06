@@ -24,12 +24,10 @@ const GrowthPage = () => {
   const [growthData, setGrowthData] = useState({
     iman: {
       istigfar: false,
-      salam: false,
-      miswak: false,
-      quranTouch: false,
-      masnunDua: false,
-      prayerOnTime: false,
-      quranReflect: false
+      prayer: false,
+      quran: false,
+      islamicLecture: false,
+      protection: false
     },
     life: {}
   })
@@ -39,47 +37,39 @@ const GrowthPage = () => {
 
   const userTypes = {
     student: 'স্টুডেন্ট',
-    professional: 'চাকুরিজীবি',
-    homemaker: 'গৃহিণী'
+    professional: 'চাকুরিজীবি/ব্যবসায়ী',
+    homemaker: 'হোমমেকার'
   }
 
   const imanChecklist = [
-    { key: 'istigfar', label: 'কমপক্ষে ৭০ বার ইস্তিগফার করুন' },
-    { key: 'salam', label: 'কমপক্ষে ৭ জনকে সালাম দিন' },
-    { key: 'miswak', label: 'মিসওয়াক ব্যবহার করুন' },
-    { key: 'quranTouch', label: 'কমপক্ষে একবার কুরআন স্পর্শ করুন' },
-    { key: 'masnunDua', label: 'সকাল ও সন্ধ্যার দোয়া পড়ুন' },
-    { key: 'prayerOnTime', label: 'সময়মতো / জামাতে নামাজ পড়ুন' },
-    { key: 'quranReflect', label: 'কুরআন নিয়ে একটু চিন্তা করুন' }
+    { key: 'istigfar', label: 'ইস্তিগফার ও মাইন্ডফুল জিকির করেছি' },
+    { key: 'prayer', label: '৫ ওয়াক্ত নামাজ পড়েছি' },
+    { key: 'quran', label: 'কমপক্ষে ১০ মিনিট অর্থসহ কুরআন পড়েছি' },
+    { key: 'islamicLecture', label: 'ইসলামিক লেকচার শুনেছি/সীরাত পড়েছি' },
+    { key: 'protection', label: 'চোখ ও মুখের হেফাজত করেছি' }
   ]
 
   const lifeChecklists = {
     student: [
-      { key: 'academics', label: 'কমপক্ষে ১ ঘন্টা গভীর অধ্যয়ন – একাডেমিক' },
-      { key: 'career', label: 'ক্যারিয়ার সম্পর্কিত ১ ঘন্টা পড়াশোনা / পডকাস্ট / ইভেন্ট / বই' },
-      { key: 'meal', label: 'একসাথে খাওয়া – পরিবার, বন্ধু বা রুমমেটদের সাথে (কমপক্ষে একবেলা)' },
-      { key: 'attendance', label: 'সময়মতো ক্লাসে উপস্থিত হওয়া' },
-      { key: 'gratitude', label: 'কৃতজ্ঞতা: আল্লাহর রহমতের জন্য কমপক্ষে একবার হাসুন' },
-      { key: 'exercise', label: 'দৈনিক ব্যায়াম: হাঁটা / মসজিদ বা অফিসে হেঁটে যাওয়া / সিঁড়ি ব্যবহার' },
-      { key: 'sleep', label: 'সঠিক ঘুম – সঠিক সময়ে কমপক্ষে ৬ ঘন্টা' }
+      { key: 'deepStudy', label: 'কমপক্ষে ২ঘণ্টা ডিপ স্ট্যাডি করেছি - একাডেমিক' },
+      { key: 'careerDev', label: 'ক্যারিয়ার ডেভেলপমেন্টে সময় দিয়েছি - পডক্যাস্ট/বই/ইভেন্ট' },
+      { key: 'family', label: 'পরিবারকে সময় দিয়েছি/খোঁজখবর নিয়েছি' },
+      { key: 'exercise', label: 'অন্তত ১৫মিনিট হেঁটেছি/ফিজিকাল এক্সারসাইজ করেছি' },
+      { key: 'sleep', label: 'রাত ১১টার মধ্যে ঘুমাতে এসেছি' }
     ],
     professional: [
-      { key: 'messages', label: 'জরুরি কল, ইমেইল এবং মেসেজ চেক করুন' },
-      { key: 'meal', label: 'একসাথে খাওয়া – পরিবার, বন্ধু বা সহকর্মীদের সাথে (কমপক্ষে একবেলা)' },
-      { key: 'deepWork', label: 'গভীর কাজ – কমপক্ষে ৩ ঘন্টা' },
-      { key: 'help', label: 'কাউকে সাহায্য করুন – এক গ্লাস পানি দেওয়াও গণনা হয়' },
-      { key: 'gratitude', label: 'কৃতজ্ঞতা: আল্লাহর রহমতের জন্য কমপক্ষে একবার হাসুন' },
-      { key: 'exercise', label: 'দৈনিক ব্যায়াম: হাঁটা / মসজিদ বা অফিসে হেঁটে যাওয়া / সিঁড়ি ব্যবহার' },
-      { key: 'sleep', label: 'সঠিক ঘুম – সঠিক সময়ে কমপক্ষে ৬ ঘন্টা' }
+      { key: 'deepWork', label: 'কমপক্ষে ৩ ঘণ্টা ডিপ ওয়ার্ক করেছি' },
+      { key: 'professionalDev', label: 'প্রফেশনাল লাইফ ডেভেলপমেন্টে সময় দিয়েছি - পডক্যাস্ট/বই/ইভেন্ট/নেটওয়ার্কিং' },
+      { key: 'family', label: 'পরিবার ও আত্মীয়স্বজনকে সময় দিয়েছি/খোঁজখবর নিয়েছি' },
+      { key: 'exercise', label: 'অন্তত ১৫মিনিট হেঁটেছি/ফিজিকাল এক্সারসাইজ করেছি' },
+      { key: 'sleep', label: 'রাত ১১টার মধ্যে ঘুমাতে এসেছি' }
     ],
     homemaker: [
-      { key: 'organizing', label: 'ঘর ও রান্নাঘর সংগঠিত করা - কমপক্ষে দায়িত্ব বণ্টন নিশ্চিত করা' },
-      { key: 'family', label: 'সন্তান বা স্বামীর সাথে বিশেষ সময় কাটানো / কমপক্ষে ফোনে' },
-      { key: 'selfCare', label: 'নিজের যত্ন নেওয়া' },
-      { key: 'learning', label: 'ব্যক্তিগত জীবনের উৎকর্ষতার জন্য কিছু শেখা' },
+      { key: 'hobby', label: 'শখের কোনো কাজে সময় দিয়েছি' },
+      { key: 'journaling', label: 'মনের কথাগুলো জার্নালিং করা' },
+      { key: 'selfCare', label: 'নিজের যত্নে হেঁটেছি/ব্যায়াম করেছি অথবা বই পড়েছি/লেকচারে শুনেছি' },
       { key: 'communication', label: 'পরিবার ও আত্মীয়দের সাথে প্রয়োজনীয় যোগাযোগ' },
-      { key: 'muhasaba', label: 'দিনের মুহাসাবা - দিনটা কেমন কাটলো তার হিসাব নেওয়া' },
-      { key: 'exercise', label: 'ব্যায়াম ও ভালো ঘুম হয়েছে কি?' }
+      { key: 'sleep', label: 'রাত ১১টার মধ্যে ঘুমাতে এসেছি' }
     ]
   }
 
@@ -144,12 +134,10 @@ const GrowthPage = () => {
         setGrowthData({
           iman: {
             istigfar: false,
-            salam: false,
-            miswak: false,
-            quranTouch: false,
-            masnunDua: false,
-            prayerOnTime: false,
-            quranReflect: false
+            prayer: false,
+            quran: false,
+            islamicLecture: false,
+            protection: false
           },
           life: {}
         })
@@ -157,7 +145,7 @@ const GrowthPage = () => {
 
     } catch (error) {
       console.error('Error loading growth data from Firestore:', error)
-      toast.error('উন্নতির ডেটা লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
+      toast.error('গ্রোথ ডেটা লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)
     }
@@ -203,12 +191,10 @@ const GrowthPage = () => {
         setGrowthData({
           iman: {
             istigfar: false,
-            salam: false,
-            miswak: false,
-            quranTouch: false,
-            masnunDua: false,
-            prayerOnTime: false,
-            quranReflect: false
+            prayer: false,
+            quran: false,
+            islamicLecture: false,
+            protection: false
           },
           life: {}
         })
@@ -221,7 +207,7 @@ const GrowthPage = () => {
 
     // Check every minute for date change
     const interval = setInterval(checkDateChange, 60000)
-    
+
     return () => clearInterval(interval)
   }, [currentDate, loading, user?.uid])
 
@@ -284,7 +270,7 @@ const GrowthPage = () => {
                 {isCompleted && <Check size={14} />}
               </div>
 
-              <span className={`flex-1 text-left text-sm md:text-base leading-relaxed ${isCompleted ? 'line-through opacity-75' : ''
+              <span className={`flex-1 text-left text-2xl md:text-lg leading-relaxed ${isCompleted ? 'line-through opacity-75' : ''
                 }`}>
                 {item.label}
               </span>
@@ -301,7 +287,7 @@ const GrowthPage = () => {
       <div className="max-w-6xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">আপনার উন্নতির ডেটা লোড হচ্ছে...</p>
+          <p className="text-gray-600">আপনার গ্রোথ ডেটা লোড হচ্ছে...</p>
         </div>
       </div>
     )
@@ -310,8 +296,8 @@ const GrowthPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
       <div className="text-center mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">উন্নতির স্কোর</h1>
-        <p className="text-gray-600 text-sm md:text-base">দিনের শেষে পর্যালোচনা</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">গ্রোথ স্কোর</h1>
+        <p className="text-gray-600 text-2xl md:text-lg">দিনের শেষে পর্যালোচনা</p>
         <div className="mt-2 text-lg font-semibold text-blue-600">
           {new Date().toLocaleDateString('en-US', {
             weekday: 'long',
@@ -325,13 +311,13 @@ const GrowthPage = () => {
 
       {/* User Type Selector */}
       <div className="bg-white rounded-xl p-4 md:p-6 mb-6 shadow-sm">
-        <h3 className="font-semibold text-gray-800 text-lg mb-4">আপনার ভূমিকা নির্বাচন করুন</h3>
+        <h3 className="font-semibold text-gray-800 text-xl mb-4">আপনার ভূমিকা নির্বাচন করুন</h3>
         <div className="flex flex-wrap gap-3">
           {Object.entries(userTypes).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setUserType(key)}
-              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-base font-medium transition-all ${userType === key
+              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-2xl md:text-lg font-medium transition-all ${userType === key
                 ? 'bg-blue-500 text-white scale-105 shadow-lg'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
@@ -346,24 +332,24 @@ const GrowthPage = () => {
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl p-4 mb-6 shadow-lg border border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-white text-lg">সামগ্রিক উন্নতির স্কোর</h3>
-            <p className="text-sm text-gray-300">দৈনিক গড়</p>
+            <h3 className="font-semibold text-white text-lg">সামগ্রিক গ্রোথ স্কোর</h3>
+            <p className="text-2xl text-gray-300">দৈনিক গড়</p>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="text-center">
               <div className="text-lg font-bold text-green-400">{getScore('iman')}%</div>
-              <div className="text-xs text-gray-400">ঈমান</div>
+              <div className="text-2xl text-gray-400">ইমান</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-blue-400">{getScore('life')}%</div>
-              <div className="text-xs text-gray-400">জীবন</div>
+              <div className="text-2xl text-gray-400">লাইফ</div>
             </div>
             <div className="text-center ml-2">
               <div className="text-3xl font-bold text-purple-400">
                 {Math.round((getScore('iman') + getScore('life')) / 2)}%
               </div>
-              <div className="text-xs text-gray-400">মোট</div>
+              <div className="text-2xl text-gray-400">মোট</div>
             </div>
           </div>
         </div>
@@ -372,7 +358,7 @@ const GrowthPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Iman Growth */}
         <ChecklistSection
-          title="ঈমানের উন্নতি (৭টি চেকলিস্ট)"
+          title="ইমান গ্রোথ (৫টি চেকলিস্ট)"
           items={imanChecklist}
           category="iman"
           color="bg-green-50"
@@ -380,7 +366,7 @@ const GrowthPage = () => {
 
         {/* Life Growth */}
         <ChecklistSection
-          title={`জীবনের উন্নতি (৭টি চেকলিস্ট) - ${userTypes[userType]}`}
+          title={`লাইফ গ্রোথ (৫টি চেকলিস্ট) - ${userTypes[userType]}`}
           items={lifeChecklists[userType]}
           category="life"
           color="bg-blue-50"

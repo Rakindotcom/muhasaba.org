@@ -104,48 +104,81 @@ const SettingsPage = () => {
     try {
       toast.info('সব ডেটা মুছে ফেলা হচ্ছে...')
 
-      // Clear Firestore data
+      // Clear main collections
       const collections = [
         'userTasks',
-        'userContacts',
+        'userContacts', 
         'userSettings',
-        'userPreferences'
+        'userPreferences',
+        'userPrayers',
+        'userGrowth'
       ]
 
+      // Delete all main documents
       for (const collectionName of collections) {
         try {
           const docRef = doc(db, collectionName, user.uid)
-          await setDoc(docRef, { deleted: true, deletedAt: serverTimestamp() })
+          await setDoc(docRef, {})
         } catch (error) {
           console.warn(`Could not clear ${collectionName}:`, error)
         }
       }
 
-      // Clear subcollections (prayers and growth)
+      // Clear subcollections by getting all documents and deleting them
       try {
-        // Note: In a production app, you'd want to use Cloud Functions to delete subcollections
-        // For now, we'll just mark the parent documents as deleted
-        const prayersRef = doc(db, 'userPrayers', user.uid)
-        await setDoc(prayersRef, { deleted: true, deletedAt: serverTimestamp() })
+        // Clear daily prayers subcollection
+        const prayersQuery = query(
+          collection(db, 'userPrayers', user.uid, 'dailyPrayers'),
+          orderBy('date', 'desc'),
+          limit(100)
+        )
+        const prayersSnapshot = await getDocs(prayersQuery)
+        
+        for (const prayerDoc of prayersSnapshot.docs) {
+          await setDoc(prayerDoc.ref, {})
+        }
 
-        const growthRef = doc(db, 'userGrowth', user.uid)
-        await setDoc(growthRef, { deleted: true, deletedAt: serverTimestamp() })
+        // Clear daily growth subcollection  
+        const growthQuery = query(
+          collection(db, 'userGrowth', user.uid, 'dailyGrowth'),
+          orderBy('date', 'desc'), 
+          limit(100)
+        )
+        const growthSnapshot = await getDocs(growthQuery)
+        
+        for (const growthDoc of growthSnapshot.docs) {
+          await setDoc(growthDoc.ref, {})
+        }
       } catch (error) {
-        console.warn('Could not clear prayer/growth data:', error)
+        console.warn('Could not clear subcollections:', error)
       }
 
-      // Clear local state
-      setProfile({ name: user.displayName || '', email: user.email || '', userType: 'student' })
-      setNotifications({ prayer: true, tasks: true, growth: false })
+      // Reset local state to defaults
+      setProfile({ 
+        name: user.displayName || '', 
+        email: user.email || '', 
+        userType: 'student' 
+      })
+      setNotifications({ 
+        prayer: true, 
+        tasks: true, 
+        growth: false 
+      })
 
-      // Clear localStorage as backup
+      // Clear localStorage
       localStorage.clear()
 
       setShowClearModal(false)
       toast.success('সব ডেটা সফলভাবে মুছে ফেলা হয়েছে!')
+      
+      // Reload the page to ensure clean state
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
+      
     } catch (error) {
       console.error('Clear data error:', error)
-      toast.error('সব ডেটা মুছতে ব্যর্থ')
+      toast.error('সব ডেটা মুছতে ব্যর্থ হয়েছে। দয়া করে আবার চেষ্টা করুন।')
     }
   }
 
@@ -173,8 +206,8 @@ const SettingsPage = () => {
       </div>
 
       <div className="flex-1 text-left">
-        <div className="font-medium text-gray-800 text-base">{title}</div>
-        {subtitle && <div className="text-sm text-gray-500 mt-1">{subtitle}</div>}
+        <div className="font-medium text-gray-800 text-xl">{title}</div>
+        {subtitle && <div className="text-xl text-gray-500 mt-1">{subtitle}</div>}
       </div>
 
       {rightElement || <ChevronRight size={20} className="text-gray-400" />}
@@ -185,7 +218,7 @@ const SettingsPage = () => {
     <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
       <div className="text-center mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">সেটিংস</h1>
-        <p className="text-gray-600 text-sm md:text-base">আপনার অ্যাকাউন্ট এবং পছন্দসমূহ পরিচালনা করুন</p>
+        <p className="text-gray-600 text-xl md:text-base">আপনার অ্যাকাউন্ট এবং পছন্দসমূহ পরিচালনা করুন</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
@@ -193,7 +226,7 @@ const SettingsPage = () => {
           {/* Profile Section */}
           <div>
             <h3 className="font-semibold text-gray-800 text-lg mb-4">অ্যাকাউন্ট</h3>
-            <div className="space-y-3">
+            <div className="space-y-3 border">
               <SettingItem
                 icon={User}
                 title="প্রোফাইল"
@@ -209,7 +242,7 @@ const SettingsPage = () => {
           {/* App Settings */}
           <div>
             <h3 className="font-semibold text-gray-800 text-lg mb-4">অ্যাপ সেটিংস</h3>
-            <div className="space-y-3">
+            <div className="space-y-3 border">
               <SettingItem
                 icon={Bell}
                 title="নোটিফিকেশন"
@@ -235,7 +268,7 @@ const SettingsPage = () => {
           {/* Reports */}
           <div>
             <h3 className="font-semibold text-gray-800 text-lg mb-4">রিপোর্ট</h3>
-            <div className="space-y-3">
+            <div className="space-y-3 border">
               <SettingItem
                 icon={BarChart3}
                 title="মাসিক রিপোর্ট"
@@ -250,7 +283,7 @@ const SettingsPage = () => {
           {/* Billing */}
           <div>
             <h3 className="font-semibold text-gray-800 text-lg mb-4">বিলিং</h3>
-            <div className="space-y-3">
+            <div className="border space-y-3">
               <SettingItem
                 icon={CreditCard}
                 title="বিলিং"
@@ -275,8 +308,8 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-blue-800 text-base">সাইন আউট</div>
-                  <div className="text-sm text-blue-600 mt-1">আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন</div>
+                  <div className="font-medium text-blue-800 text-xl">সাইন আউট</div>
+                  <div className="text-xl text-blue-600 mt-1">আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন</div>
                 </div>
 
                 <ChevronRight size={20} className="text-blue-400" />
@@ -296,8 +329,8 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-red-800 text-base">সব ডেটা মুছে ফেলুন</div>
-                  <div className="text-sm text-red-600 mt-1">এটি আপনার সব ডেটা স্থায়ীভাবে মুছে দেবে</div>
+                  <div className="font-medium text-red-800 text-xl">সব ডেটা মুছে ফেলুন</div>
+                  <div className="text-xl text-red-600 mt-1">এটি আপনার সব ডেটা স্থায়ীভাবে মুছে দেবে</div>
                 </div>
 
                 <ChevronRight size={20} className="text-red-400" />
@@ -308,9 +341,9 @@ const SettingsPage = () => {
       </div>
 
       {/* App Info */}
-      <div className="text-center text-gray-500 text-sm mt-8">
+      <div className="text-center text-gray-500 mt-8">
         <p>Muhasaba.org v1.0.0</p>
-        <p className="mt-1">মুসলিম সম্প্রদায়ের জন্য ❤️ দিয়ে তৈরি</p>
+        <p className="mt-1">মুসলিমদের জন্য ❤️ দিয়ে তৈরি</p>
         <p>
                 Developed by{" "}
                 <a
@@ -340,7 +373,7 @@ const SettingsPage = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">আপনার নাম</label>
+                <label className="block text-xl font-medium text-gray-700 mb-2">আপনার নাম</label>
                 <input
                   type="text"
                   value={tempName}
@@ -363,7 +396,7 @@ const SettingsPage = () => {
                   onClick={updateName}
                   className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
-                  সংরক্ষণ
+                  সেভ
                 </button>
               </div>
             </div>
@@ -425,14 +458,14 @@ const SettingsPage = () => {
               <p className="text-gray-600">
                 আপনি কি নিশ্চিত যে আপনি সব ডেটা মুছে ফেলতে চান? এটি স্থায়ীভাবে মুছে দেবে:
               </p>
-              <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+              <ul className="text-xl text-gray-600 list-disc list-inside space-y-1">
                 <li>সব কাজ এবং অগ্রগতি</li>
                 <li>নামাজ ট্র্যাকিং ডেটা</li>
                 <li>উন্নতির স্কোর</li>
                 <li>যোগাযোগের তথ্য</li>
                 <li>সব সেটিংস এবং পছন্দসমূহ</li>
               </ul>
-              <p className="text-red-600 font-medium text-sm">এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না!</p>
+              <p className="text-red-600 font-medium text-xl">এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না!</p>
 
               <div className="flex gap-3 pt-2">
                 <button

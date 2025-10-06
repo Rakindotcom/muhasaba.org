@@ -39,7 +39,7 @@ const DateTimeDisplay = ({ className = '' }) => {
             <div className="text-2xl font-bold text-gray-900">
               {formatTime(currentTime)}
             </div>
-            <div className="text-sm text-gray-500">Current Time</div>
+            <div className="text-lg text-gray-500">Current Time</div>
           </div>
         </div>
         
@@ -49,7 +49,7 @@ const DateTimeDisplay = ({ className = '' }) => {
             <div className="text-lg font-semibold text-gray-900">
               {formatDate(currentTime)}
             </div>
-            <div className="text-sm text-gray-500">Today's Date</div>
+            <div className="text-lg text-gray-500">Today's Date</div>
           </div>
         </div>
       </div>

@@ -42,10 +42,10 @@ const FirestorePermissionWarning = () => {
       <div className="flex items-start space-x-3">
         <Shield className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-semibold text-orange-800 mb-1">
+          <h4 className="text-lg font-semibold text-orange-800 mb-1">
             Database Permissions Needed
           </h4>
-          <p className="text-xs text-orange-700 mb-3">
+          <p className="text-base text-orange-700 mb-3">
             Some features may not work properly. Update Firestore security rules to enable full functionality.
           </p>
           <div className="flex items-center space-x-2">
@@ -53,14 +53,14 @@ const FirestorePermissionWarning = () => {
               href="https://console.firebase.google.com/project/muhasaba-40225/firestore/rules"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-1 text-xs bg-orange-600 text-white px-2 py-1 rounded hover:bg-orange-700"
+              className="inline-flex items-center space-x-1 text-base bg-orange-600 text-white px-2 py-1 rounded hover:bg-orange-700"
             >
               <ExternalLink className="w-3 h-3" />
               <span>Fix Rules</span>
             </a>
             <button
               onClick={handleDismiss}
-              className="text-xs text-orange-600 hover:text-orange-800"
+              className="text-base text-orange-600 hover:text-orange-800"
             >
               Dismiss
             </button>

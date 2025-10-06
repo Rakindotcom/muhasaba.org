@@ -11,9 +11,9 @@ const navigationItems = [
 export default function BottomNavigation({ activeTab, setActiveTab }) {
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-white via-white to-transparent pt-4">
+    <div className="navbar fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-white via-white to-transparent pt-4">
       <div className="max-w-md mx-auto">
-        <nav className="bg-gray-900 px-2 py-3">
+        <nav className="navbar bg-gray-900 px-2 py-3">
           <div className="flex items-center justify-between">
             {navigationItems.map((item, index) => {
               const Icon = item.icon
@@ -45,8 +45,8 @@ export default function BottomNavigation({ activeTab, setActiveTab }) {
                   />
                   <span
                     className={`
-                      text-xs font-medium mt-1 transition-all duration-200
-                      ${isCenter ? "text-xs" : "text-[10px]"}
+                      text-base font-medium mt-1 transition-all duration-200
+                      ${isCenter ? "text-base" : "text-[10px]"}
                       ${isActive ? "opacity-100" : "opacity-70"}
                     `}
                   >

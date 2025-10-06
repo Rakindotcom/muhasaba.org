@@ -315,9 +315,9 @@ const PrayerPage = () => {
         <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
             <div className="text-center mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">নামাজ ট্র্যাকার</h1>
-                <p className="text-gray-600 text-sm md:text-base">দিনের শেষে পর্যালোচনা</p>
+                <p className="text-gray-600 text-2xl md:text-lg">দিনের শেষে পর্যালোচনা</p>
                 <div className="mt-2 flex items-center justify-center gap-2 text-blue-600">
-                    <span className="text-sm font-medium">
+                    <span className="text-2xl font-medium">
                         {new Date().toLocaleDateString('en-US', { 
                             weekday: 'long', 
                             year: 'numeric', 
@@ -333,15 +333,15 @@ const PrayerPage = () => {
             <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
                 <div className="bg-green-50 rounded-xl p-4 md:p-6 text-center hover:bg-green-100 transition-colors">
                     <div className="text-2xl md:text-4xl font-bold text-green-600">{totalPrayed}</div>
-                    <div className="text-xs md:text-sm text-green-700 mt-1">পড়েছি</div>
+                    <div className="text-2xl md:text-2xl text-green-700 mt-1">পড়েছি</div>
                 </div>
                 <div className="bg-blue-50 rounded-xl p-4 md:p-6 text-center hover:bg-blue-100 transition-colors">
                     <div className="text-2xl md:text-4xl font-bold text-blue-600">{totalJamat}</div>
-                    <div className="text-xs md:text-sm text-blue-700 mt-1">জামাত</div>
+                    <div className="text-2xl md:text-2xl text-blue-700 mt-1">জামাত</div>
                 </div>
                 <div className="bg-red-50 rounded-xl p-4 md:p-6 text-center hover:bg-red-100 transition-colors">
                     <div className="text-2xl md:text-4xl font-bold text-red-600">{totalMissed}</div>
-                    <div className="text-xs md:text-sm text-red-700 mt-1">মিসড</div>
+                    <div className="text-2xl md:text-2xl text-red-700 mt-1">মিসড</div>
                 </div>
             </div>
 
@@ -360,7 +360,7 @@ const PrayerPage = () => {
                                 <div className="flex gap-2 md:gap-3">
                                     <button
                                         onClick={() => togglePrayer(key, 'prayed')}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${prayerData[key].prayed
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-2xl font-medium transition-all ${prayerData[key].prayed
                                             ? 'bg-green-100 text-green-700 scale-105'
                                             : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                             }`}
@@ -371,7 +371,7 @@ const PrayerPage = () => {
 
                                     <button
                                         onClick={() => togglePrayer(key, 'jamat')}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${prayerData[key].jamat
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-2xl font-medium transition-all ${prayerData[key].jamat
                                             ? 'bg-blue-100 text-blue-700 scale-105'
                                             : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                             }`}
@@ -396,7 +396,7 @@ const PrayerPage = () => {
 
                     {qazaData.date && (
                         <div className="mb-4 text-center">
-                            <p className="text-xs text-gray-600 bg-white/50 rounded-lg px-2 py-1">
+                            <p className="text-2xl text-gray-600 bg-white/50 rounded-lg px-2 py-1">
                                 {formatDateInBengali(qazaData.date)} এর মিসড নামাজ
                             </p>
                         </div>
@@ -405,7 +405,7 @@ const PrayerPage = () => {
                     {getTotalQaza() === 0 ? (
                         <div className="text-center py-6">
                             <Moon size={48} className="mx-auto mb-4 text-orange-400" />
-                            <p className="text-gray-600 text-sm">গতকালের কোন বাকি নামাজ নেই</p>
+                            <p className="text-gray-600 text-2xl">গতকালের কোন বাকি নামাজ নেই</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -416,7 +416,7 @@ const PrayerPage = () => {
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => prayQaza(prayer)}
-                                                className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition-colors"
+                                                className="bg-green-500 text-white px-3 py-1 rounded text-2xl hover:bg-green-600 transition-colors"
                                             >
                                                 পড়ুন
                                             </button>
