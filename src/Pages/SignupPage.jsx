@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Mail, Lock, User, UserPlus } from 'lucide-react';
 import { toast } from 'react-toastify';
-import FirebaseSetupGuide from '../components/FirebaseSetupGuide';
+import FirebaseSetupGuide from '../Components/FirebaseSetupGuide';
 
 const SignupPage = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
