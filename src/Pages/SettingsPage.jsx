@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { User, Bell, CreditCard, LogOut, ChevronRight, X, BarChart3 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'react-toastify'
-import MonthlyReport from '../components/MonthlyReport'
+import MonthlyReport from '../Components/MonthlyReport'
 import {
   doc,
   setDoc,
