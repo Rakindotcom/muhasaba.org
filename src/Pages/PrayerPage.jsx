@@ -410,7 +410,7 @@ const PrayerPage = () => {
 
                     {qazaData && qazaData.date && (
                         <div className="mb-4 text-center">
-                            <p className="text-2xl text-gray-600 bg-white/50 rounded-lg px-2 py-1">
+                            <p className="text-sm text-gray-600 bg-white/50 rounded-lg px-2 py-1">
                                 {formatDateInBengali(qazaData.date)} এর মিসড নামাজ
                             </p>
                         </div>
@@ -426,13 +426,13 @@ const PrayerPage = () => {
                             {qazaData && qazaData.prayers && Object.entries(qazaData.prayers).map(([prayer, missed]) => (
                                 missed && (
                                     <div key={prayer} className="flex items-center justify-between bg-white/70 rounded-lg p-3">
-                                        <span className="font-medium text-gray-800">{prayerNames[prayer]}</span>
+                                        <span className="font-medium text-red-800">{prayerNames[prayer]}</span>
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => prayQaza(prayer)}
-                                                className="bg-green-500 text-white px-3 py-1 rounded text-2xl hover:bg-green-600 transition-colors"
+                                                className="bg-green-500 text-white px-3 py-1 rounded text-base hover:bg-green-600 transition-colors"
                                             >
-                                                পড়ুন
+                                                পড়েছি
                                             </button>
                                         </div>
                                     </div>
