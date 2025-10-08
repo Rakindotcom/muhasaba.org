@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { User, Bell, CreditCard, LogOut, ChevronRight, X, BarChart3 } from 'lucide-react'
+import { User, Bell, CreditCard, LogOut, ChevronRight, X, BarChart3, Calendar, Clock } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'react-toastify'
 import MonthlyReport from '../Components/MonthlyReport'
+import WeeklyReport from '../Components/WeeklyReport'
+import DailyReport from '../Components/DailyReport'
 import {
   doc,
   setDoc,
@@ -27,6 +29,8 @@ const SettingsPage = () => {
 
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showMonthlyReport, setShowMonthlyReport] = useState(false)
+  const [showWeeklyReport, setShowWeeklyReport] = useState(false)
+  const [showDailyReport, setShowDailyReport] = useState(false)
   const [tempName, setTempName] = useState('')
 
   // Save settings to Firestore
@@ -179,12 +183,53 @@ const SettingsPage = () => {
           <div>
             <h3 className="font-semibold text-gray-800 text-2xl mb-4">রিপোর্ট</h3>
             <div className="space-y-3 border">
-              <SettingItem
-                icon={BarChart3}
-                title="মাসিক রিপোর্ট"
-                subtitle="নামাজ ট্র্যাকিং এবং উন্নতির স্কোর দেখুন"
+              <button
+                onClick={() => setShowDailyReport(true)}
+                className="w-full flex items-center gap-4 p-4 md:p-6 bg-green-50 hover:bg-green-100 transition-colors shadow-sm border border-green-200"
+              >
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <Clock size={24} className="text-green-600" />
+                </div>
+
+                <div className="flex-1 text-left">
+                  <div className="font-medium text-green-800 text-xl">দৈনিক রিপোর্ট</div>
+                  <div className="text-lg text-green-600 mt-1">আজকের নামাজ ও উন্নতির বিস্তারিত</div>
+                </div>
+
+                <ChevronRight size={20} className="text-green-400" />
+              </button>
+
+              <button
+                onClick={() => setShowWeeklyReport(true)}
+                className="w-full flex items-center gap-4 p-4 md:p-6 bg-green-50 hover:bg-green-100 transition-colors shadow-sm border border-green-200"
+              >
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <Calendar size={24} className="text-green-600" />
+                </div>
+
+                <div className="flex-1 text-left">
+                  <div className="font-medium text-green-800 text-xl">সাপ্তাহিক রিপোর্ট</div>
+                  <div className="text-lg text-green-600 mt-1">সপ্তাহের অগ্রগতি ও পরিসংখ্যান</div>
+                </div>
+
+                <ChevronRight size={20} className="text-green-400" />
+              </button>
+
+              <button
                 onClick={() => setShowMonthlyReport(true)}
-              />
+                className="w-full flex items-center gap-4 p-4 md:p-6 bg-green-50 hover:bg-green-100 transition-colors shadow-sm border border-green-200"
+              >
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <BarChart3 size={24} className="text-green-600" />
+                </div>
+
+                <div className="flex-1 text-left">
+                  <div className="font-medium text-green-800 text-xl">মাসিক রিপোর্ট</div>
+                  <div className="text-lg text-green-600 mt-1">নামাজ ট্র্যাকিং এবং উন্নতির স্কোর দেখুন</div>
+                </div>
+
+                <ChevronRight size={20} className="text-green-400" />
+              </button>
             </div>
           </div>
         </div>
@@ -197,7 +242,7 @@ const SettingsPage = () => {
               <SettingItem
                 icon={CreditCard}
                 title="বিলিং"
-                subtitle="ফ্রি ভার্সন - কোন বিলিং প্রয়োজন নেই"
+                subtitle="ফ্রি ভার্সন - আপাতত বিলিং প্রয়োজন নেই"
                 onClick={() => { }}
               />
             </div>
@@ -211,18 +256,18 @@ const SettingsPage = () => {
             <div className="space-y-3">
               <button
                 onClick={() => setShowSignOutModal(true)}
-                className="w-full flex items-center gap-4 p-4 md:p-6 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200"
+                className="w-full flex items-center gap-4 p-4 md:p-6 bg-red-100 rounded-lg hover:bg-red-200 transition-colors border border-blue-200"
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <LogOut size={24} className="text-blue-600" />
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <LogOut size={24} className="text-red-600" />
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-blue-800 text-xl">সাইন আউট</div>
-                  <div className="text-xl text-blue-600 mt-1">আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন</div>
+                  <div className="font-medium text-red-600 text-2xl">সাইন আউট</div>
+                  <div className="text-xl text-red-600 mt-1">আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন</div>
                 </div>
 
-                <ChevronRight size={20} className="text-blue-400" />
+                <ChevronRight size={20} className="text-red-400" />
               </button>
             </div>
           </div>
@@ -235,17 +280,7 @@ const SettingsPage = () => {
       <div className="text-center text-gray-500 mt-8">
         <p>Muhasaba.org v1.0.0</p>
         <p className="mt-1">মুসলিমদের জন্য ❤️ দিয়ে তৈরি</p>
-        <p>
-                Developed by{" "}
-                <a
-                  href="https://www.linkedin.com/in/rakinalshahriar/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-teal-600 hover:text-teal-800 cursor-pointer transition-colors underline"
-                >
-                  Rakin Al Shahriar
-                </a>
-              </p>
+        <p>©️Divine Consultancy</p>
       </div>
 
       {/* Name Edit Modal */}
@@ -333,11 +368,19 @@ const SettingsPage = () => {
 
 
 
-      {/* Monthly Report Modal */}
+      {/* Report Modals */}
+      {showDailyReport && (
+        <DailyReport onClose={() => setShowDailyReport(false)} />
+      )}
+
+      {showWeeklyReport && (
+        <WeeklyReport onClose={() => setShowWeeklyReport(false)} />
+      )}
+
       {showMonthlyReport && (
         <MonthlyReport onClose={() => setShowMonthlyReport(false)} />
       )}
-      
+
     </div>
   )
 }

@@ -14,6 +14,142 @@ const getFirestoreDateString = (date) => {
   return `${year}-${month}-${day}`
 }
 
+export const getWeeklyData = async (startDate, endDate, userId) => {
+  if (!userId) {
+    throw new Error('User ID is required to fetch weekly data')
+  }
+
+  const weekData = {
+    prayers: [],
+    growth: [],
+    summary: {
+      trackedDays: 0,
+      prayerStats: { total: 0, jamat: 0, missed: 0 },
+      growthStats: { iman: [], life: [], overall: [] }
+    }
+  }
+
+  try {
+    // Get user type preference
+    let userType = 'student'
+    try {
+      const userPrefsRef = doc(db, 'userPreferences', userId)
+      const prefsDoc = await getDoc(userPrefsRef)
+      if (prefsDoc.exists() && prefsDoc.data().userType) {
+        userType = prefsDoc.data().userType
+      }
+    } catch (error) {
+      console.warn('Could not fetch user type, using default:', error)
+    }
+
+    // Iterate through each day of the week
+    const currentDate = new Date(startDate)
+    while (currentDate <= endDate) {
+      const firestoreDateStr = getFirestoreDateString(currentDate)
+      const displayDateStr = getDateString(currentDate)
+      
+      // Collect prayer data
+      try {
+        const dailyPrayerRef = doc(db, 'userPrayers', userId, 'dailyPrayers', firestoreDateStr)
+        const prayerDoc = await getDoc(dailyPrayerRef)
+        
+        if (prayerDoc.exists()) {
+          const prayers = prayerDoc.data().prayers
+          const dayStats = calculateDayPrayerStats(prayers, currentDate.getDate(), displayDateStr)
+          weekData.prayers.push(dayStats)
+          updatePrayerSummary(weekData.summary.prayerStats, dayStats)
+        }
+      } catch (error) {
+        console.warn(`Could not fetch prayer data for ${firestoreDateStr}:`, error)
+      }
+
+      // Collect growth data
+      try {
+        const dailyGrowthRef = doc(db, 'userGrowth', userId, 'dailyGrowth', firestoreDateStr)
+        const growthDoc = await getDoc(dailyGrowthRef)
+        
+        if (growthDoc.exists()) {
+          const growth = growthDoc.data().growthData
+          const dayUserType = growthDoc.data().userType || userType
+          const dayStats = calculateDayGrowthStats(growth, dayUserType, currentDate.getDate(), displayDateStr)
+          weekData.growth.push(dayStats)
+          updateGrowthSummary(weekData.summary.growthStats, dayStats)
+          weekData.summary.trackedDays++
+        }
+      } catch (error) {
+        console.warn(`Could not fetch growth data for ${firestoreDateStr}:`, error)
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    return weekData
+  } catch (error) {
+    console.error('Error fetching weekly data:', error)
+    throw error
+  }
+}
+
+export const getDailyData = async (date, userId) => {
+  if (!userId) {
+    throw new Error('User ID is required to fetch daily data')
+  }
+
+  const firestoreDateStr = getFirestoreDateString(date)
+  const dailyData = {
+    prayers: null,
+    growth: null,
+    date: getDateString(date)
+  }
+
+  try {
+    // Get user type preference
+    let userType = 'student'
+    try {
+      const userPrefsRef = doc(db, 'userPreferences', userId)
+      const prefsDoc = await getDoc(userPrefsRef)
+      if (prefsDoc.exists() && prefsDoc.data().userType) {
+        userType = prefsDoc.data().userType
+      }
+    } catch (error) {
+      console.warn('Could not fetch user type, using default:', error)
+    }
+
+    // Fetch prayer data
+    try {
+      const dailyPrayerRef = doc(db, 'userPrayers', userId, 'dailyPrayers', firestoreDateStr)
+      const prayerDoc = await getDoc(dailyPrayerRef)
+      
+      if (prayerDoc.exists()) {
+        const prayers = prayerDoc.data().prayers
+        dailyData.prayers = calculateDayPrayerStats(prayers, date.getDate(), getDateString(date))
+      }
+    } catch (error) {
+      console.warn(`Could not fetch prayer data for ${firestoreDateStr}:`, error)
+    }
+
+    // Fetch growth data
+    try {
+      const dailyGrowthRef = doc(db, 'userGrowth', userId, 'dailyGrowth', firestoreDateStr)
+      const growthDoc = await getDoc(dailyGrowthRef)
+      
+      if (growthDoc.exists()) {
+        const growth = growthDoc.data().growthData
+        const dayUserType = growthDoc.data().userType || userType
+        dailyData.growth = calculateDayGrowthStats(growth, dayUserType, date.getDate(), getDateString(date))
+        dailyData.growth.userType = dayUserType
+      }
+    } catch (error) {
+      console.warn(`Could not fetch growth data for ${firestoreDateStr}:`, error)
+    }
+
+    return dailyData
+  } catch (error) {
+    console.error('Error fetching daily data:', error)
+    throw error
+  }
+}
+
 export const getMonthlyData = async (year, month, userId) => {
   if (!userId) {
     throw new Error('User ID is required to fetch monthly data')
@@ -250,6 +386,8 @@ const generateInsights = (reportData) => {
 export default {
   getDateString,
   getMonthlyData,
+  getWeeklyData,
+  getDailyData,
   getAverage,
   exportMonthlyReport
 }

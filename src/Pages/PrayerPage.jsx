@@ -324,8 +324,7 @@ const PrayerPage = () => {
     return (
         <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
             <div className="text-center mb-6 md:mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">নামাজ ট্র্যাকার</h1>
-                <p className="text-gray-600 text-2xl md:text-lg">দিনের শেষে পর্যালোচনা</p>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">নামাজ ট্র্যাকার</h1>
                 <div className="mt-2 flex items-center justify-center gap-2 text-blue-600">
                     <span className="text-2xl font-medium">
                         {new Date().toLocaleDateString('en-US', {
@@ -373,7 +372,7 @@ const PrayerPage = () => {
                                     <div className="flex gap-2 md:gap-3">
                                         <button
                                             onClick={() => togglePrayer(key, 'prayed')}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-base font-medium transition-all ${prayerStatus.prayed
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-base md:text-xl font-medium transition-all ${prayerStatus.prayed
                                                 ? 'bg-green-100 text-green-700 scale-105'
                                                 : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                                 }`}
@@ -384,7 +383,7 @@ const PrayerPage = () => {
 
                                         <button
                                             onClick={() => togglePrayer(key, 'jamat')}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-base font-medium transition-all ${prayerStatus.jamat
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-base md:text-xl font-medium transition-all ${prayerStatus.jamat
                                                 ? 'bg-blue-100 text-blue-700 scale-105'
                                                 : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                                 }`}

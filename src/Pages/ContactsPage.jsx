@@ -123,9 +123,9 @@ const ContactsPage = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
       <div className="text-center mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">জরুরি যোগাযোগ</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">জরুরি যোগাযোগ</h1>
         <div className="flex flex-col items-center gap-1">
-          <p className="text-gray-600 text-2xl md:text-lg">গুরুত্বপূর্ণ ব্যক্তিদের দ্রুত অ্যাক্সেস</p>
+          <p className="text-gray-600 text-2xl md:text-lg">যাদের সাথে যোগাযোগ করতে হবে</p>
           {syncing && (
             <div className="flex items-center justify-center gap-2 text-2xl text-gray-500 mt-2">
               <div className="animate-spin rounded-full h-3 w-3 border-b border-gray-400"></div>
@@ -145,7 +145,7 @@ const ContactsPage = () => {
                 : 'text-gray-600 hover:text-gray-800'
               }`}
           >
-            মেসেজ যোগাযোগ
+            মেসেজ দিলেও হবে
           </button>
           <button
             onClick={() => setActiveSection('call')}
@@ -154,7 +154,7 @@ const ContactsPage = () => {
                 : 'text-gray-600 hover:text-gray-800'
               }`}
           >
-            কল যোগাযোগ
+            কল করতে হবে
           </button>
         </div>
       </div>
@@ -165,7 +165,7 @@ const ContactsPage = () => {
       <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-6">
           <h3 className="font-semibold text-gray-800 text-2xl">
-            {activeSection === 'message' ? 'যাদের মেসেজ করতে হবে' : 'যাদের কল করতে হবে'}
+            {activeSection === 'message' ? 'যাদের মেসেজ দিলেও হবে' : 'যাদের কল করতে হবে'}
           </h3>
           <span className="text-2xl text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
             {contacts[activeSection].length}

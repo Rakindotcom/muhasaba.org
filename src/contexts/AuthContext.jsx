@@ -28,56 +28,69 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Set user first, then try Firestore operations
-        setUser(user);
-
-        // Register device session with validation
-        try {
-          const registrationResult = await registerDeviceSession(user.uid);
-          if (!registrationResult.success) {
-            console.warn('Device session registration failed:', registrationResult.error);
-            // If device limit exceeded, show warning but don't log out
-            if (registrationResult.error?.includes('device limit')) {
-              console.warn('Device limit reached - oldest sessions removed');
-            }
-          }
-        } catch (error) {
-          console.warn('Device session registration failed:', error);
-          // Don't prevent authentication if device registration fails
-        }
-
-        // Try to create or update user document in Firestore (optional)
-        try {
-          const userRef = doc(db, 'users', user.uid);
-          const userSnap = await getDoc(userRef);
-
-          if (!userSnap.exists()) {
-            await setDoc(userRef, {
-              email: user.email,
-              displayName: user.displayName || '',
-              createdAt: serverTimestamp(),
-              lastLogin: serverTimestamp()
-            });
-          } else {
-            // Update last login
-            await setDoc(userRef, {
-              lastLogin: serverTimestamp()
-            }, { merge: true });
-          }
-        } catch (error) {
-          console.warn('Firestore operation failed (user still authenticated):', error);
-          // Don't prevent authentication if Firestore fails
-        }
-      } else {
-        setUser(null);
-      }
-
+    // Check if auth is properly initialized
+    if (!auth) {
+      console.warn('Firebase Auth not initialized, skipping auth state listener');
       setLoading(false);
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      try {
+        if (user) {
+          // Set user first, then try Firestore operations
+          setUser(user);
+
+          // Register device session with validation (non-blocking)
+          registerDeviceSession(user.uid).catch(error => {
+            console.warn('Device session registration failed:', error);
+          });
+
+          // Try to create or update user document in Firestore (non-blocking)
+          const userRef = doc(db, 'users', user.uid);
+          getDoc(userRef).then(userSnap => {
+            if (!userSnap.exists()) {
+              setDoc(userRef, {
+                email: user.email,
+                displayName: user.displayName || '',
+                createdAt: serverTimestamp(),
+                lastLogin: serverTimestamp()
+              }).catch(error => {
+                console.warn('Failed to create user document:', error);
+              });
+            } else {
+              // Update last login
+              setDoc(userRef, {
+                lastLogin: serverTimestamp()
+              }, { merge: true }).catch(error => {
+                console.warn('Failed to update last login:', error);
+              });
+            }
+          }).catch(error => {
+            console.warn('Failed to check user document:', error);
+          });
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Auth state change error:', error);
+        // Still set user state even if other operations fail
+        setUser(user);
+      } finally {
+        setLoading(false);
+      }
+    }, (error) => {
+      // Handle auth state change errors
+      console.error('Firebase Auth state change error:', error);
+      setLoading(false);
+      // Don't throw error, just log it
     });
 
-    return unsubscribe;
+    return () => {
+      if (unsubscribe && typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const signup = async (email, password, displayName) => {

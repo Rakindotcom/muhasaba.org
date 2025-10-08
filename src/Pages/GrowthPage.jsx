@@ -258,8 +258,8 @@ const GrowthPage = () => {
   const ChecklistSection = ({ title, items, category, color }) => (
     <div className={`${color} rounded-xl p-4 md:p-6 mb-4 lg:mb-0 h-fit`}>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-semibold text-gray-800 text-2xl">{title}</h3>
-        <div className="text-2xl md:text-3xl font-bold text-gray-700">{getScore(category)}%</div>
+        <h3 className="font-semibold text-gray-800 text-xl">{title}</h3>
+        <div className="text-xl md:text-3xl font-bold text-gray-700">{getScore(category)}%</div>
       </div>
 
       <div className="space-y-3">
@@ -282,7 +282,7 @@ const GrowthPage = () => {
                 {isCompleted && <Check size={14} />}
               </div>
 
-              <span className={`flex-1 text-left text-2xl md:text-lg leading-relaxed ${isCompleted ? 'line-through opacity-75' : ''
+              <span className={`flex-1 text-left text-xl md:text-lg leading-relaxed ${isCompleted ? 'line-through opacity-75' : ''
                 }`}>
                 {item.label}
               </span>
@@ -308,8 +308,7 @@ const GrowthPage = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
       <div className="text-center mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">গ্রোথ স্কোর</h1>
-        <p className="text-gray-600 text-2xl md:text-lg">দিনের শেষে পর্যালোচনা</p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">গ্রোথ স্কোর</h1>
         <div className="mt-2 text-lg font-semibold text-blue-600">
           {new Date().toLocaleDateString('en-US', {
             weekday: 'long',
@@ -323,13 +322,13 @@ const GrowthPage = () => {
 
       {/* User Type Selector */}
       <div className="bg-white rounded-xl p-4 md:p-6 mb-6 shadow-sm">
-        <h3 className="font-semibold text-gray-800 text-2xl mb-4">আপনার ভূমিকা নির্বাচন করুন</h3>
+        <h3 className="font-semibold text-gray-800 text-xl mb-4">আপনার ভূমিকা নির্বাচন করুন</h3>
         <div className="flex flex-wrap gap-3">
           {Object.entries(userTypes).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setUserType(key)}
-              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-2xl md:text-lg font-medium transition-all ${userType === key
+              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-xl md:text-lg font-medium transition-all ${userType === key
                 ? 'bg-blue-500 text-white scale-105 shadow-lg'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
@@ -344,24 +343,24 @@ const GrowthPage = () => {
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl p-4 mb-6 shadow-lg border border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-white text-2xl">সামগ্রিক গ্রোথ স্কোর</h3>
-            <p className="text-2xl text-gray-300">দৈনিক গড়</p>
+            <h3 className="font-semibold text-white text-xl">সামগ্রিক গ্রোথ স্কোর</h3>
+            <p className="text-xl text-gray-300">দৈনিক গড়</p>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="text-center">
               <div className="text-lg font-bold text-green-400">{getScore('iman')}%</div>
-              <div className="text-2xl text-gray-400">ইমান</div>
+              <div className="text-xl text-gray-400">ইমান</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-blue-400">{getScore('life')}%</div>
-              <div className="text-2xl text-gray-400">লাইফ</div>
+              <div className="text-xl text-gray-400">লাইফ</div>
             </div>
             <div className="text-center ml-2">
-              <div className="text-3xl font-bold text-purple-400">
+              <div className="text-2xl font-bold text-purple-400">
                 {Math.round((getScore('iman') + getScore('life')) / 2)}%
               </div>
-              <div className="text-2xl text-gray-400">মোট</div>
+              <div className="text-xl text-gray-400">মোট</div>
             </div>
           </div>
         </div>
@@ -370,7 +369,7 @@ const GrowthPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Iman Growth */}
         <ChecklistSection
-          title="ইমান গ্রোথ (৫টি চেকলিস্ট)"
+          title="ইমান গ্রোথ - ৫টি চেকলিস্ট"
           items={imanChecklist}
           category="iman"
           color="bg-green-50"
@@ -378,7 +377,7 @@ const GrowthPage = () => {
 
         {/* Life Growth */}
         <ChecklistSection
-          title={`লাইফ গ্রোথ (৫টি চেকলিস্ট) - ${userTypes[userType]}`}
+          title={`লাইফ গ্রোথ - ৫টি চেকলিস্ট - ${userTypes[userType]}`}
           items={lifeChecklists[userType]}
           category="life"
           color="bg-blue-50"
