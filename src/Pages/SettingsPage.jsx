@@ -120,8 +120,8 @@ const SettingsPage = () => {
       </div>
 
       <div className="flex-1 text-left">
-        <div className="font-medium text-gray-800 text-xl">{title}</div>
-        {subtitle && <div className="text-xl text-gray-500 mt-1">{subtitle}</div>}
+        <div className="font-medium text-gray-800 text-lg">{title}</div>
+        {subtitle && <div className="text-lg text-gray-500 mt-1">{subtitle}</div>}
       </div>
 
       {rightElement || <ChevronRight size={20} className="text-gray-400" />}
@@ -192,8 +192,8 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-green-800 text-xl">দৈনিক রিপোর্ট</div>
-                  <div className="text-lg text-green-600 mt-1">আজকের নামাজ ও উন্নতির বিস্তারিত</div>
+                  <div className="font-medium text-green-800 text-lg">দৈনিক রিপোর্ট</div>
+                  <div className="text-lg text-green-600 mt-1">আজকের নামাজ ও গ্রোথের বিস্তারিত</div>
                 </div>
 
                 <ChevronRight size={20} className="text-green-400" />
@@ -208,7 +208,7 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-green-800 text-xl">সাপ্তাহিক রিপোর্ট</div>
+                  <div className="font-medium text-green-800 text-lg">সাপ্তাহিক রিপোর্ট</div>
                   <div className="text-lg text-green-600 mt-1">সপ্তাহের অগ্রগতি ও পরিসংখ্যান</div>
                 </div>
 
@@ -224,8 +224,8 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-green-800 text-xl">মাসিক রিপোর্ট</div>
-                  <div className="text-lg text-green-600 mt-1">নামাজ ট্র্যাকিং এবং উন্নতির স্কোর দেখুন</div>
+                  <div className="font-medium text-green-800 text-lg">মাসিক রিপোর্ট</div>
+                  <div className="text-lg text-green-600 mt-1">নামাজ ট্র্যাকিং এবং গ্রোথের স্কোর দেখুন</div>
                 </div>
 
                 <ChevronRight size={20} className="text-green-400" />
@@ -263,8 +263,8 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-red-600 text-2xl">সাইন আউট</div>
-                  <div className="text-xl text-red-600 mt-1">আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন</div>
+                  <div className="font-medium text-red-600 text-lg">সাইন আউট</div>
+                  <div className="text-lg text-red-600 mt-1">আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন</div>
                 </div>
 
                 <ChevronRight size={20} className="text-red-400" />

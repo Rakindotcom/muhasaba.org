@@ -125,9 +125,9 @@ const ContactsPage = () => {
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">জরুরি যোগাযোগ</h1>
         <div className="flex flex-col items-center gap-1">
-          <p className="text-gray-600 text-2xl md:text-lg">যাদের সাথে যোগাযোগ করতে হবে</p>
+          <p className="text-gray-600 text-lg">যাদের সাথে যোগাযোগ করতে হবে</p>
           {syncing && (
-            <div className="flex items-center justify-center gap-2 text-2xl text-gray-500 mt-2">
+            <div className="flex items-center justify-center gap-2 text-lg text-gray-500 mt-2">
               <div className="animate-spin rounded-full h-3 w-3 border-b border-gray-400"></div>
               <span>সিঙ্ক হচ্ছে...</span>
             </div>
@@ -180,7 +180,7 @@ const ContactsPage = () => {
               ) : (
                 <Phone size={48} className="mx-auto mb-4 opacity-50" />
               )}
-              <p className="text-2xl">এখনো কোন যোগাযোগ যোগ করা হয়নি</p>
+              <p className="text-lg">এখনো কোন যোগাযোগ যোগ করা হয়নি</p>
             </div>
           ) : (
             contacts[activeSection].map(contact => (
@@ -189,7 +189,7 @@ const ContactsPage = () => {
                   <User size={18} className="text-gray-600" />
                 </div>
 
-                <span className="flex-1 text-2xl md:text-lg text-gray-800">
+                <span className="flex-1 text-lg text-gray-800">
                   {contact.name}
                 </span>
 

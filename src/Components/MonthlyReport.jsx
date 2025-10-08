@@ -161,7 +161,7 @@ const MonthlyReport = ({ onClose }) => {
                 <div className="bg-purple-50 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-purple-600" />
-                    <h4 className="font-semibold text-purple-800">উন্নতির গড়</h4>
+                    <h4 className="font-semibold text-purple-800">গ্রোথের গড়</h4>
                   </div>
                   <div className="text-2xl font-bold text-purple-600">
                     {getAverage(reportData.summary.growthStats.overall)}%
@@ -221,7 +221,7 @@ const MonthlyReport = ({ onClose }) => {
                 <div className="bg-white border rounded-lg p-4">
                   <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <Heart className="w-5 h-5" />
-                    উন্নতি স্কোর বিবরণ
+                    গ্রোথ স্কোর বিবরণ
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -288,7 +288,7 @@ const MonthlyReport = ({ onClose }) => {
                       <>
                         {getAverage(reportData.summary.growthStats.overall) >= 80 ? (
                           <div className="text-sm text-purple-700 bg-purple-100 rounded p-2">
-                            🚀 অসাধারণ ব্যক্তিগত উন্নতি! আপনি চমৎকার অভ্যাস বজায় রাখছেন।
+                            🚀 অসাধারণ ব্যক্তিগত গ্রোথ! আপনি চমৎকার অভ্যাস বজায় রাখছেন।
                           </div>
                         ) : getAverage(reportData.summary.growthStats.overall) >= 60 ? (
                           <div className="text-sm text-blue-700 bg-blue-100 rounded p-2">
@@ -296,7 +296,7 @@ const MonthlyReport = ({ onClose }) => {
                           </div>
                         ) : (
                           <div className="text-sm text-yellow-700 bg-yellow-100 rounded p-2">
-                            🎯 ভালো ব্যক্তিগত উন্নতির জন্য ধারাবাহিক দৈনিক অভ্যাস গড়ুন।
+                            🎯 ভালো ব্যক্তিগত গ্রোথের জন্য ধারাবাহিক দৈনিক অভ্যাস গড়ুন।
                           </div>
                         )}
                       </>
@@ -318,7 +318,7 @@ const MonthlyReport = ({ onClose }) => {
                   <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-600 mb-2">কোন ডেটা পাওয়া যায়নি</h3>
                   <p className="text-gray-500">
-                    {months[selectedMonth.getMonth()]} {selectedMonth.getFullYear()} এর জন্য কোন নামাজ বা উন্নতি ট্র্যাকিং ডেটা পাওয়া যায়নি।
+                    {months[selectedMonth.getMonth()]} {selectedMonth.getFullYear()} এর জন্য কোন নামাজ বা গ্রোথ ট্র্যাকিং ডেটা পাওয়া যায়নি।
                   </p>
                 </div>
               )}

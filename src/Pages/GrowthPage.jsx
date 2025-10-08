@@ -155,7 +155,7 @@ const GrowthPage = () => {
   useEffect(() => {
     setGrowthData(prev => {
       if (!prev) return prev
-      
+
       const newLifeData = {}
       lifeChecklists[userType].forEach(item => {
         newLifeData[item.key] = (prev.life && prev.life[item.key]) || false
@@ -234,7 +234,7 @@ const GrowthPage = () => {
       if (!prev || !prev[category]) {
         return prev
       }
-      
+
       return {
         ...prev,
         [category]: {
@@ -249,7 +249,7 @@ const GrowthPage = () => {
     if (!growthData || !growthData[category]) {
       return 0
     }
-    
+
     const items = category === 'iman' ? imanChecklist : lifeChecklists[userType]
     const completed = items.filter(item => growthData[category] && growthData[category][item.key]).length
     return Math.round((completed / items.length) * 100)
@@ -282,7 +282,7 @@ const GrowthPage = () => {
                 {isCompleted && <Check size={14} />}
               </div>
 
-              <span className={`flex-1 text-left text-xl md:text-lg leading-relaxed ${isCompleted ? 'line-through opacity-75' : ''
+              <span className={`flex-1 text-left text-lg leading-relaxed ${isCompleted ? 'line-through opacity-75' : ''
                 }`}>
                 {item.label}
               </span>
@@ -328,7 +328,7 @@ const GrowthPage = () => {
             <button
               key={key}
               onClick={() => setUserType(key)}
-              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-xl md:text-lg font-medium transition-all ${userType === key
+              className={`px-4 md:px-6 py-2 md:py-3 rounded-lg text-lg font-medium transition-all ${userType === key
                 ? 'bg-blue-500 text-white scale-105 shadow-lg'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}

@@ -325,15 +325,13 @@ const PrayerPage = () => {
         <div className="max-w-4xl mx-auto p-4 md:p-6 pb-32 md:pb-6">
             <div className="text-center mb-6 md:mb-8">
                 <h1 className="text-3xl font-bold text-gray-800 mb-2">নামাজ ট্র্যাকার</h1>
-                <div className="mt-2 flex items-center justify-center gap-2 text-blue-600">
-                    <span className="text-2xl font-medium">
-                        {new Date().toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}
-                    </span>
+                <div className="mt-2 text-lg font-semibold text-blue-600">
+                    {new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })}
                 </div>
 
             </div>
@@ -367,12 +365,12 @@ const PrayerPage = () => {
 
                             return (
                                 <div key={key} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <span className="font-medium text-gray-800 mb-2 md:mb-0 text-2xl">{name}</span>
+                                    <span className="font-medium text-gray-800 mb-2 md:mb-0 text-lg">{name}</span>
 
                                     <div className="flex gap-2 md:gap-3">
                                         <button
                                             onClick={() => togglePrayer(key, 'prayed')}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-base md:text-xl font-medium transition-all ${prayerStatus.prayed
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-lg font-medium transition-all ${prayerStatus.prayed
                                                 ? 'bg-green-100 text-green-700 scale-105'
                                                 : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                                 }`}
@@ -383,7 +381,7 @@ const PrayerPage = () => {
 
                                         <button
                                             onClick={() => togglePrayer(key, 'jamat')}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-base md:text-xl font-medium transition-all ${prayerStatus.jamat
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-lg font-medium transition-all ${prayerStatus.jamat
                                                 ? 'bg-blue-100 text-blue-700 scale-105'
                                                 : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                                                 }`}
@@ -418,18 +416,18 @@ const PrayerPage = () => {
                     {getTotalQaza() === 0 ? (
                         <div className="text-center py-6">
                             <Moon size={48} className="mx-auto mb-4 text-orange-400" />
-                            <p className="text-gray-600 text-2xl">গতকালের কোন বাকি নামাজ নেই</p>
+                            <p className="text-gray-600 text-lg">গতকালের কোন বাকি নামাজ নেই</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
                             {qazaData && qazaData.prayers && Object.entries(qazaData.prayers).map(([prayer, missed]) => (
                                 missed && (
                                     <div key={prayer} className="flex items-center justify-between bg-white/70 rounded-lg p-3">
-                                        <span className="font-medium text-red-800">{prayerNames[prayer]}</span>
+                                        <span className="font-medium text-red-800 text-lg">{prayerNames[prayer]}</span>
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => prayQaza(prayer)}
-                                                className="bg-green-500 text-white px-3 py-1 rounded text-base hover:bg-green-600 transition-colors"
+                                                className="bg-green-500 text-white px-3 py-1 rounded text-lg hover:bg-green-600 transition-colors"
                                             >
                                                 পড়েছি
                                             </button>

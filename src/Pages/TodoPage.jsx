@@ -322,12 +322,12 @@ const TodoPage = () => {
               </button>
 
               <div className="flex-1">
-                <span className={`text-2xl md:text-lg transition-all block ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'
+                <span className={`text-lg transition-all block ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'
                   }`}>
                   {task.text}
                 </span>
                 {isMissed && task.dateCreated && (
-                  <span className="text-2xl text-gray-500 mt-1 block">
+                  <span className="text-lg text-gray-500 mt-1 block">
                     যেদিন করতে চেয়েছিলামঃ {new Date(task.dateCreated).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
@@ -378,14 +378,14 @@ const TodoPage = () => {
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">দৈনিক কাজসমূহ</h1>
         <div className="flex flex-col items-center gap-1">
-          <p className="text-blue-600 font-medium text-2xl">
+          <div className="text-lg font-semibold text-blue-600">
             {new Date().toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
               day: 'numeric'
             })}
-          </p>
+          </div>
 
         </div>
       </div>
