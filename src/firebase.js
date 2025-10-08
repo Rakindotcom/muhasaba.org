@@ -5,12 +5,12 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAuF0lD8ZnCtCupvEYCzyFEnm_a9SXgK9g",
-  authDomain: "muhasaba-40225.firebaseapp.com",
-  projectId: "muhasaba-40225",
-  storageBucket: "muhasaba-40225.firebasestorage.app",
-  messagingSenderId: "1088616142657",
-  appId: "1:1088616142657:web:e0688c418fc284714933c0"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAuF0lD8ZnCtCupvEYCzyFEnm_a9SXgK9g",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "muhasaba-40225.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "muhasaba-40225",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "muhasaba-40225.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1088616142657",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1088616142657:web:e0688c418fc284714933c0"
 };
 
 // Validate Firebase configuration
