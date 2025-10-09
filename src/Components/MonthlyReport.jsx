@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { X, Calendar, TrendingUp, Heart, Clock, Star, Download, ChevronLeft, ChevronRight, Lightbulb } from 'lucide-react'
+import { X, Calendar, Download, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'react-toastify'
-import { getMonthlyData, getAverage, exportMonthlyReport } from '../utils/dataManager'
+import { getMonthlyData, getAverage } from '../utils/dataManager'
 import { useAuth } from '../contexts/AuthContext'
 import { downloadReportAsImage, formatMonthForFilename } from '../utils/downloadUtils'
 

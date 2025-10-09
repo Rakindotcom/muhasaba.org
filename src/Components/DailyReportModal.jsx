@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Calendar, TrendingUp, CheckCircle, XCircle, Clock, Target, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Calendar, X, ChevronLeft, ChevronRight, Download } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import {
     doc,
@@ -168,6 +168,22 @@ const DailyReportModal = ({ onClose }) => {
         }
     }
 
+    // Handle download
+    const handleDownload = async () => {
+        try {
+            const { downloadReportAsImage, formatDateForFilename } = await import('../utils/downloadUtils')
+            const filename = `daily-report-${formatDateForFilename(new Date(selectedDate))}`
+            await downloadReportAsImage('daily-report-modal', filename)
+            
+            const { toast } = await import('react-toastify')
+            toast.success('দৈনিক রিপোর্ট ডাউনলোড হয়েছে!')
+        } catch (error) {
+            console.error('Download error:', error)
+            const { toast } = await import('react-toastify')
+            toast.error('রিপোর্ট ডাউনলোড করতে সমস্যা হয়েছে')
+        }
+    }
+
     // Calculate growth scores
     const calculateGrowthScores = () => {
         if (!reportData?.growth?.growthData) {
@@ -291,19 +307,30 @@ const DailyReportModal = ({ onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div id="daily-report-modal" className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Header with Close Button */}
                 <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between rounded-t-xl">
                     <h2 className="text-xl font-bold text-gray-800">দৈনিক রিপোর্ট</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 p-1"
-                    >
-                        <X size={24} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {reportData && (
+                            <button
+                                onClick={handleDownload}
+                                className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                                title="রিপোর্ট ডাউনলোড করুন"
+                            >
+                                <Download size={20} />
+                            </button>
+                        )}
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-gray-600 p-1"
+                        >
+                            <X size={24} />
+                        </button>
+                    </div>
                 </div>
 
-                <div className="p-6">
+                <div id="daily-report-content" className="p-6">
                     {/* Modern Date Selector */}
                     <div className="text-center mb-6">
                         <div className="flex items-center justify-center gap-2 mb-4">

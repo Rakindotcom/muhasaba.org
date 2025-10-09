@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { X, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, Calendar, ChevronLeft, ChevronRight, Download } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
-import {
-    doc,
-    getDoc,
-    collection,
-    query,
-    where,
-    getDocs
-} from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 
 const WeeklyReport = ({ onClose }) => {
@@ -169,15 +162,43 @@ const WeeklyReport = ({ onClose }) => {
     loadWeeklyData()
   }, [selectedWeek, user?.uid])
 
+  // Handle download
+  const handleDownload = async () => {
+    try {
+      const { downloadReportAsImage, formatWeekForFilename } = await import('../utils/downloadUtils')
+      const { start, end } = getWeekRange(selectedWeek)
+      const filename = formatWeekForFilename(start, end)
+      await downloadReportAsImage('weekly-report-modal', filename)
+      
+      const { toast } = await import('react-toastify')
+      toast.success('সাপ্তাহিক রিপোর্ট ডাউনলোড হয়েছে!')
+    } catch (error) {
+      console.error('Download error:', error)
+      const { toast } = await import('react-toastify')
+      toast.error('রিপোর্ট ডাউনলোড করতে সমস্যা হয়েছে')
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div id="weekly-report-modal" className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-semibold text-gray-800">সাপ্তাহিক রিপোর্ট</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
-            <X size={24} />
-          </button>
+          <div className="flex items-center gap-2">
+            {reportData && (
+              <button
+                onClick={handleDownload}
+                className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                title="রিপোর্ট ডাউনলোড করুন"
+              >
+                <Download size={20} />
+              </button>
+            )}
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
+              <X size={24} />
+            </button>
+          </div>
         </div>
 
         {/* Week Selector */}
@@ -207,7 +228,7 @@ const WeeklyReport = ({ onClose }) => {
         </div>
 
         {/* Report Content */}
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
+        <div id="weekly-report-content" className="p-6 overflow-y-auto max-h-[60vh]">
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
