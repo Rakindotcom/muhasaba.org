@@ -120,7 +120,7 @@ const MonthlyReport = ({ onClose }) => {
         </div>
 
         {/* Report Content - Scrollable */}
-        <div id="monthly-report-content" className="flex-1 overflow-y-auto p-6">
+        <div id="monthly-report-content" className="flex-1 overflow-y-auto p-6 pb-32 md:pb-6">
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>

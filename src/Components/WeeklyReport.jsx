@@ -228,7 +228,7 @@ const WeeklyReport = ({ onClose }) => {
         </div>
 
         {/* Report Content */}
-        <div id="weekly-report-content" className="p-6 overflow-y-auto max-h-[60vh]">
+        <div id="weekly-report-content" className="p-6 pb-32 md:pb-6 overflow-y-auto max-h-[60vh]">
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>

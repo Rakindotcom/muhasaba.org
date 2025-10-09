@@ -330,7 +330,7 @@ const DailyReportModal = ({ onClose }) => {
                     </div>
                 </div>
 
-                <div id="daily-report-content" className="p-6">
+                <div id="daily-report-content" className="p-6 pb-32 md:pb-6">
                     {/* Modern Date Selector */}
                     <div className="text-center mb-6">
                         <div className="flex items-center justify-center gap-2 mb-4">
