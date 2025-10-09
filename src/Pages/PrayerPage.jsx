@@ -115,6 +115,20 @@ const PrayerPage = () => {
                     })
                 }
 
+                // Check for completed qaza prayers and remove them from missed list
+                const qazaRef = doc(db, 'userQaza', user.uid, 'completedQaza', yesterday)
+                const qazaDoc = await getDoc(qazaRef)
+                
+                if (qazaDoc.exists() && qazaDoc.data().completedPrayers) {
+                    const completedPrayers = qazaDoc.data().completedPrayers
+                    Object.entries(completedPrayers).forEach(([prayerName, isCompleted]) => {
+                        if (!isCompleted) {
+                            // If prayer is marked as not completed (false), it means it was completed
+                            delete missedPrayers[prayerName]
+                        }
+                    })
+                }
+
                 return {
                     prayers: missedPrayers,
                     date: yesterday
@@ -298,6 +312,22 @@ const PrayerPage = () => {
 
             // Update local state immediately
             setQazaData(updatedQazaData)
+
+            // Save qaza completion to Firestore
+            try {
+                if (user?.uid && qazaData.date) {
+                    const qazaRef = doc(db, 'userQaza', user.uid, 'completedQaza', qazaData.date)
+                    await setDoc(qazaRef, {
+                        completedPrayers: {
+                            ...updatedQazaData.prayers
+                        },
+                        date: qazaData.date,
+                        lastUpdated: serverTimestamp()
+                    })
+                }
+            } catch (error) {
+                // Silent error handling
+            }
 
             // Show success message
             toast.success(`${prayerNames[prayer]} কাজা নামাজ সম্পন্ন হয়েছে`)

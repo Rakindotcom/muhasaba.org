@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'react-toastify'
 import MonthlyReport from '../Components/MonthlyReport'
 import WeeklyReport from '../Components/WeeklyReport'
-import DailyReport from '../Components/DailyReport'
+import DailyReportModal from '../Components/DailyReportModal'
 import {
   doc,
   setDoc,
@@ -181,7 +181,7 @@ const SettingsPage = () => {
 
           {/* Reports */}
           <div>
-            <h3 className="font-semibold text-gray-800 text-2xl mb-4">রিপোর্ট</h3>
+            <h3 className="font-semibold text-gray-800 text-2xl mb-4">রিপোর্ট ডাউনলোড</h3>
             <div className="space-y-3 border">
               <button
                 onClick={() => setShowDailyReport(true)}
@@ -370,7 +370,7 @@ const SettingsPage = () => {
 
       {/* Report Modals */}
       {showDailyReport && (
-        <DailyReport onClose={() => setShowDailyReport(false)} />
+        <DailyReportModal onClose={() => setShowDailyReport(false)} />
       )}
 
       {showWeeklyReport && (

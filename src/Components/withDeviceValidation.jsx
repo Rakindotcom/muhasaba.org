@@ -5,10 +5,10 @@ import { validateDeviceSession } from '../utils/deviceManager';
 import { toast } from 'react-toastify';
 
 const withDeviceValidation = (WrappedComponent, options = {}) => {
-  const { 
-    validateOnMount = false, 
+  const {
+    validateOnMount = false,
     validateOnAction = true,
-    showNotification = true 
+    showNotification = true
   } = options;
 
   return function DeviceValidatedComponent(props) {
@@ -19,17 +19,17 @@ const withDeviceValidation = (WrappedComponent, options = {}) => {
 
       try {
         const result = await validateDeviceSession(user.uid);
-        
+
         if (!result.valid) {
           if (showToast) {
             toast.error('Your session has been terminated. Please log in again.');
           }
-          
+
           // Force logout
           await logout();
           return result;
         }
-        
+
         return result;
       } catch (error) {
         console.error('Session validation error:', error);

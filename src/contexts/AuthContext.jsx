@@ -6,7 +6,9 @@ import {
   signOut,
   updateProfile,
   sendPasswordResetEmail,
-  signInWithPopup
+  signInWithPopup,
+  linkWithCredential,
+  GoogleAuthProvider
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../firebase';
@@ -118,6 +120,10 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, googleProvider);
       return result;
     } catch (error) {
+      // Handle account exists with different credential
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        throw new Error('এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট আছে। দয়া করে ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।');
+      }
       const errorInfo = handleFirebaseError(error);
       throw new Error(errorInfo.message);
     }
@@ -156,6 +162,20 @@ export const AuthProvider = ({ children }) => {
     return await signOut(auth);
   };
 
+  // Link Google account to existing email/password account
+  const linkGoogleAccount = async () => {
+    if (!user) throw new Error('No user logged in');
+    
+    try {
+      const credential = GoogleAuthProvider.credential();
+      await linkWithCredential(user, credential);
+      return { success: true };
+    } catch (error) {
+      const errorInfo = handleFirebaseError(error);
+      throw new Error(errorInfo.message);
+    }
+  };
+
   // Track user activity (gracefully handle Firestore permission errors)
   const trackActivity = async (activity, data = {}) => {
     if (!user) return;
@@ -185,6 +205,7 @@ export const AuthProvider = ({ children }) => {
     signup,
     login,
     loginWithGoogle,
+    linkGoogleAccount,
     resetPassword,
     logout,
     trackActivity,
