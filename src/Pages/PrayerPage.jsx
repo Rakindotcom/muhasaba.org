@@ -66,7 +66,7 @@ const PrayerPage = () => {
             })
 
         } catch (error) {
-            console.error('Error saving prayer data to Firestore:', error)
+            // Silent error handling
         }
     }
 
@@ -123,7 +123,6 @@ const PrayerPage = () => {
 
             return { prayers: {}, date: null }
         } catch (error) {
-            console.error('Error loading yesterday\'s prayers:', error)
             return { prayers: {}, date: null }
         }
     }
@@ -160,7 +159,7 @@ const PrayerPage = () => {
             setQazaData(yesterdayQaza)
 
         } catch (error) {
-            console.error('Error loading prayer data from Firestore:', error)
+            // Silent error handling
         } finally {
             setLoading(false)
         }

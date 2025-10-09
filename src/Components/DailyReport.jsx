@@ -71,45 +71,7 @@ const DailyReport = ({ onClose }) => {
     isha: 'ইশা'
   }
 
-  const imanItems = {
-    istigfar: 'ইস্তিগফার',
-    salam: 'সালাম',
-    miswak: 'মিসওয়াক',
-    quranTouch: 'কুরআন স্পর্শ',
-    masnunDua: 'মাসনুন দোয়া',
-    prayerOnTime: 'সময়মত নামাজ',
-    quranReflect: 'কুরআন চিন্তা'
-  }
 
-  const lifeItems = {
-    student: {
-      academics: 'পড়াশোনা',
-      career: 'ক্যারিয়ার',
-      meal: 'খাবার',
-      attendance: 'উপস্থিতি',
-      gratitude: 'কৃতজ্ঞতা',
-      exercise: 'ব্যায়াম',
-      sleep: 'ঘুম'
-    },
-    professional: {
-      messages: 'বার্তা',
-      meal: 'খাবার',
-      deepWork: 'গভীর কাজ',
-      help: 'সাহায্য',
-      gratitude: 'কৃতজ্ঞতা',
-      exercise: 'ব্যায়াম',
-      sleep: 'ঘুম'
-    },
-    homemaker: {
-      organizing: 'সংগঠন',
-      family: 'পরিবার',
-      selfCare: 'স্ব-যত্ন',
-      learning: 'শেখা',
-      communication: 'যোগাযোগ',
-      muhasaba: 'মুহাসাবা',
-      exercise: 'ব্যায়াম'
-    }
-  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -247,56 +209,7 @@ const DailyReport = ({ onClose }) => {
                 </div>
               )}
 
-              {/* Growth Details */}
-              {reportData.growth && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Iman Details */}
-                  <div className="bg-white border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Heart className="w-5 h-5" />
-                      ঈমানী কাজসমূহ
-                    </h4>
-                    <div className="space-y-2">
-                      {Object.entries(imanItems).map(([key, name]) => {
-                        const completed = reportData.growth.details.iman[key]
-                        return (
-                          <div key={key} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <span className="text-sm text-gray-700">{name}</span>
-                            {completed ? (
-                              <CheckCircle className="w-4 h-4 text-green-500" />
-                            ) : (
-                              <XCircle className="w-4 h-4 text-red-400" />
-                            )}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
 
-                  {/* Life Details */}
-                  <div className="bg-white border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
-                      জীবনযাত্রার কাজসমূহ
-                    </h4>
-                    <div className="space-y-2">
-                      {reportData.growth.details.life && Object.entries(lifeItems[reportData.growth.userType] || lifeItems.student).map(([key, name]) => {
-                        const completed = reportData.growth.details.life[key]
-                        return (
-                          <div key={key} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <span className="text-sm text-gray-700">{name}</span>
-                            {completed ? (
-                              <CheckCircle className="w-4 h-4 text-green-500" />
-                            ) : (
-                              <XCircle className="w-4 h-4 text-red-400" />
-                            )}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Daily Insights */}
               {(reportData.prayers || reportData.growth) && (

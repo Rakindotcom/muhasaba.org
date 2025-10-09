@@ -72,8 +72,6 @@ const SignupPage = ({ onSwitchToLogin }) => {
         onSwitchToLogin();
       }, 2000);
     } catch (error) {
-      console.error('Signup error:', error);
-
       // Check if it's a configuration error
       if (error.message.includes('Authentication service is not properly configured') ||
         error.message.includes('configuration-not-found')) {

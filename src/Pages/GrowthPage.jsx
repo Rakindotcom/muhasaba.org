@@ -98,7 +98,7 @@ const GrowthPage = () => {
 
 
     } catch (error) {
-      console.error('Error saving growth data to Firestore:', error)
+      // Silent error handling
     }
   }
 
@@ -144,7 +144,6 @@ const GrowthPage = () => {
       }
 
     } catch (error) {
-      console.error('Error loading growth data from Firestore:', error)
       toast.error('গ্রোথ ডেটা লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)

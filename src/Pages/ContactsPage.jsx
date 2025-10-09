@@ -34,7 +34,7 @@ const ContactsPage = () => {
         lastUpdated: serverTimestamp()
       })
     } catch (error) {
-      console.error('Error saving contacts to Firestore:', error)
+      // Silent error handling
     } finally {
       setSyncing(false)
     }
@@ -55,7 +55,6 @@ const ContactsPage = () => {
         setContacts(docSnap.data().contacts)
       }
     } catch (error) {
-      console.error('Error loading contacts from Firestore:', error)
       toast.error('যোগাযোগ লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)

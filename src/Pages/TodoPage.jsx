@@ -87,7 +87,7 @@ const TodoPage = () => {
       })
 
     } catch (error) {
-      console.error('Error saving tasks to Firestore:', error)
+      // Silent error handling
     }
   }
 
@@ -130,7 +130,6 @@ const TodoPage = () => {
       }
 
     } catch (error) {
-      console.error('Error loading tasks from Firestore:', error)
       toast.error('কাজগুলো লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)

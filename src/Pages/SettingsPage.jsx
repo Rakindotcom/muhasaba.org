@@ -45,7 +45,7 @@ const SettingsPage = () => {
         lastUpdated: serverTimestamp()
       })
     } catch (error) {
-      console.error('Error saving settings to Firestore:', error)
+      // Silent error handling
     }
   }
 
@@ -76,7 +76,7 @@ const SettingsPage = () => {
         await saveSettingsToFirestore(initialProfile, notifications)
       }
     } catch (error) {
-      console.error('Error loading settings from Firestore:', error)
+      // Silent error handling
     }
   }
 

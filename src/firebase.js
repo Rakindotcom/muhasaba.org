@@ -100,6 +100,6 @@ window.addEventListener('error', (event) => {
   }
 });
 
-console.log('Firebase initialized successfully');
+
 
 export default app;

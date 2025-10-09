@@ -25,7 +25,6 @@ const LoginPage = ({ onSwitchToSignup }) => {
       await login(email, password);
       await trackActivity('user_login', { method: 'email' });
     } catch (error) {
-      console.error('Login error:', error);
       let errorMessage = 'লগ ইন করতে ব্যর্থ';
 
       switch (error.code) {
@@ -67,7 +66,6 @@ const LoginPage = ({ onSwitchToSignup }) => {
       await trackActivity('user_login', { method: 'google' });
       toast.success('Google দিয়ে সফলভাবে সাইন ইন হয়েছে');
     } catch (error) {
-      console.error('Google sign-in error:', error);
       let errorMessage = 'Google সাইন ইন করতে ব্যর্থ';
 
       switch (error.code) {
@@ -106,7 +104,6 @@ const LoginPage = ({ onSwitchToSignup }) => {
         autoClose: 8000
       });
     } catch (error) {
-      console.error('Password reset error:', error);
       let errorMessage = 'পাসওয়ার্ড রিসেট করতে ব্যর্থ';
 
       switch (error.code) {

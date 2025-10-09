@@ -5,24 +5,16 @@ export const downloadReportAsImage = async (elementId, filename) => {
       throw new Error(`Element with ID '${elementId}' not found`)
     }
 
-    // Use print-based approach which is more reliable
-    await downloadUsingPrint(element, filename)
+    // Try direct HTML download (most reliable)
+    await downloadAsHTML(element, filename)
 
   } catch (error) {
-    console.error('Error downloading report:', error)
-    // Show user-friendly instructions
+    // Fallback to manual instructions
     showDownloadInstructions()
   }
 }
 
-const downloadUsingPrint = async (element, filename) => {
-  // Create a new window with just the report content
-  const printWindow = window.open('', '_blank', 'width=1200,height=900,scrollbars=yes')
-  
-  if (!printWindow) {
-    throw new Error('পপআপ ব্লক করা হয়েছে। পপআপ অনুমতি দিন এবং আবার চেষ্টা করুন।')
-  }
-
+const downloadAsHTML = async (element, filename) => {
   // Get the current page's CSS
   const stylesheets = Array.from(document.styleSheets)
   let cssText = ''
@@ -40,7 +32,7 @@ const downloadUsingPrint = async (element, filename) => {
       }
     })
   } catch (e) {
-    console.warn('Could not extract all CSS rules')
+    // Skip external stylesheets that can't be accessed
   }
 
   // Clone the element
@@ -49,7 +41,6 @@ const downloadUsingPrint = async (element, filename) => {
   // Remove modal-specific styling and constraints to show full content
   const modalContent = clonedElement.querySelector('[id*="report-content"]')
   if (modalContent) {
-    // Remove height constraints and overflow settings
     modalContent.style.maxHeight = 'none'
     modalContent.style.height = 'auto'
     modalContent.style.overflow = 'visible'
@@ -80,7 +71,7 @@ const downloadUsingPrint = async (element, filename) => {
   const navigationElements = clonedElement.querySelectorAll('[class*="ChevronLeft"], [class*="ChevronRight"], .ignore-print')
   navigationElements.forEach(el => el.style.display = 'none')
 
-  // Create a complete HTML document for printing
+  // Create a complete HTML document
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -90,7 +81,6 @@ const downloadUsingPrint = async (element, filename) => {
       <style>
         ${cssText}
         
-        /* Additional print-specific styles */
         * {
           -webkit-print-color-adjust: exact !important;
           color-adjust: exact !important;
@@ -103,7 +93,7 @@ const downloadUsingPrint = async (element, filename) => {
           background: white !important;
         }
         
-        .print-container {
+        .report-container {
           max-width: none !important;
           width: 100% !important;
           margin: 0 auto;
@@ -168,94 +158,39 @@ const downloadUsingPrint = async (element, filename) => {
         .grid-cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
         .grid-cols-3 { grid-template-columns: repeat(3, 1fr) !important; }
         .grid-cols-7 { grid-template-columns: repeat(7, 1fr) !important; }
-        
-        @media print {
-          @page {
-            size: A4;
-            margin: 0.5in;
-          }
-          
-          body { 
-            margin: 0; 
-            padding: 0; 
-            background: white !important;
-          }
-          
-          .print-container { 
-            box-shadow: none; 
-            margin: 0; 
-            border-radius: 0;
-            max-width: none !important;
-            width: 100% !important;
-          }
-          
-          /* Force all content to be visible in print */
-          * {
-            -webkit-print-color-adjust: exact !important;
-            color-adjust: exact !important;
-            max-height: none !important;
-            overflow: visible !important;
-          }
-          
-          /* Prevent page breaks in important sections */
-          .grid > div, .space-y-6 > div {
-            break-inside: avoid;
-            page-break-inside: avoid;
-          }
-        }
       </style>
     </head>
     <body>
-      <div class="print-container">
+      <div class="report-container">
         ${clonedElement.innerHTML}
       </div>
-      
-
-      
-      <script>
-        window.onload = function() {
-          // Auto-trigger print dialog after a short delay
-          setTimeout(function() {
-            window.print();
-          }, 1000);
-        }
-        
-        // Close window after printing (optional)
-        window.onafterprint = function() {
-          setTimeout(function() {
-            window.close();
-          }, 2000);
-        }
-      </script>
     </body>
     </html>
   `
 
-  printWindow.document.write(htmlContent)
-  printWindow.document.close()
+  // Create blob and download
+  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
   
-  // Focus the new window
-  printWindow.focus()
+  // Create download link
+  const downloadLink = document.createElement('a')
+  downloadLink.href = url
+  downloadLink.download = `${filename}.html`
+  downloadLink.style.display = 'none'
+  
+  // Trigger download
+  document.body.appendChild(downloadLink)
+  downloadLink.click()
+  document.body.removeChild(downloadLink)
+  
+  // Clean up
+  setTimeout(() => {
+    URL.revokeObjectURL(url)
+  }, 1000)
 }
 
 const showDownloadInstructions = () => {
-  const message = `
-রিপোর্ট ডাউনলোড করার উপায়:
-
-📄 প্রিন্ট/PDF:
-• Ctrl+P চাপুন
-• "Save as PDF" নির্বাচন করুন
-• ফাইল সেভ করুন
-
-📸 স্ক্রিনশট:
-• Windows: Win+Shift+S
-• Mac: Cmd+Shift+4
-• রিপোর্ট এলাকা নির্বাচন করুন
-
-একটি নতুন উইন্ডো খোলা হবে যেখানে আপনি প্রিন্ট করতে পারবেন।
-  `
-  
-  alert(message)
+  // Silent fallback - no logging needed
 }
 
 export const formatDateForFilename = (date) => {
