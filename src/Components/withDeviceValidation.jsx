@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 const withDeviceValidation = (WrappedComponent, options = {}) => {
   const {
     validateOnMount = false,
-    validateOnAction = true,
     showNotification = true
   } = options;
 

@@ -48,7 +48,7 @@ const WeeklyReport = ({ onClose }) => {
 
     setLoading(true)
     try {
-      const { start, end } = getWeekRange(selectedWeek)
+      const { start } = getWeekRange(selectedWeek)
       const weekData = {
         prayers: [],
         growth: [],

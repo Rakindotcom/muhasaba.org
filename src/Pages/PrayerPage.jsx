@@ -65,7 +65,7 @@ const PrayerPage = () => {
                 lastUpdated: serverTimestamp()
             })
 
-        } catch (error) {
+        } catch {
             // Silent error handling
         }
     }
@@ -136,7 +136,7 @@ const PrayerPage = () => {
             }
 
             return { prayers: {}, date: null }
-        } catch (error) {
+        } catch {
             return { prayers: {}, date: null }
         }
     }
@@ -172,7 +172,7 @@ const PrayerPage = () => {
             const yesterdayQaza = await loadYesterdayQaza()
             setQazaData(yesterdayQaza)
 
-        } catch (error) {
+        } catch {
             // Silent error handling
         } finally {
             setLoading(false)
@@ -325,7 +325,7 @@ const PrayerPage = () => {
                         lastUpdated: serverTimestamp()
                     })
                 }
-            } catch (error) {
+            } catch {
                 // Silent error handling
             }
 

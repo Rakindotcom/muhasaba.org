@@ -1,5 +1,5 @@
 // Data Management Utilities for Muhasaba App
-import { collection, doc, getDoc, getDocs, query, where, orderBy } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 
 export const getDateString = (date = new Date()) => {

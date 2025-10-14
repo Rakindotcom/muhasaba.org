@@ -86,7 +86,7 @@ const TodoPage = () => {
         dateUpdated: getTodayDateString()
       })
 
-    } catch (error) {
+    } catch {
       // Silent error handling
     }
   }
@@ -129,7 +129,7 @@ const TodoPage = () => {
         setMissedTasks({ mustDo: [], goodToDo: [] })
       }
 
-    } catch (error) {
+    } catch {
       toast.error('কাজগুলো লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)
@@ -326,8 +326,8 @@ const TodoPage = () => {
                   {task.text}
                 </span>
                 {isMissed && task.dateCreated && (
-                  <span className="text-lg text-gray-500 mt-1 block">
-                    যেদিন করতে চেয়েছিলামঃ {new Date(task.dateCreated).toLocaleDateString('en-US', {
+                  <span className="text-sm text-gray-500 mt-1 block">
+                    যেদিনের কাজঃ {new Date(task.dateCreated).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
                       year: 'numeric'
@@ -340,10 +340,10 @@ const TodoPage = () => {
                 {isMissed && (
                   <button
                     onClick={() => moveTaskToToday(task, section)}
-                    className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors text-lg font-medium"
+                    className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors text-base font-medium"
                     title="আজকে নিয়ে যান"
                   >
-                    আজকে নিয়ে যান
+                    আজকে করবো
                   </button>
                 )}
                 <button

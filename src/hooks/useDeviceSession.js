@@ -10,7 +10,6 @@ import { toast } from 'react-toastify';
 
 export const useDeviceSession = () => {
   const { user, logout } = useAuth();
-  const validationIntervalRef = useRef(null);
   const lastValidationRef = useRef(0);
 
   // Register device session on login

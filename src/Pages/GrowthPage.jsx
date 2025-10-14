@@ -97,7 +97,7 @@ const GrowthPage = () => {
       }, { merge: true })
 
 
-    } catch (error) {
+    } catch {
       // Silent error handling
     }
   }
@@ -143,7 +143,7 @@ const GrowthPage = () => {
         })
       }
 
-    } catch (error) {
+    } catch {
       toast.error('গ্রোথ ডেটা লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)

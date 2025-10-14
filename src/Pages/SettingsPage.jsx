@@ -44,7 +44,7 @@ const SettingsPage = () => {
         notifications: notificationData,
         lastUpdated: serverTimestamp()
       })
-    } catch (error) {
+    } catch {
       // Silent error handling
     }
   }
@@ -75,7 +75,7 @@ const SettingsPage = () => {
         setProfile(initialProfile)
         await saveSettingsToFirestore(initialProfile, notifications)
       }
-    } catch (error) {
+    } catch {
       // Silent error handling
     }
   }

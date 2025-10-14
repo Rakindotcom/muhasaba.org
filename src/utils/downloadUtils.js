@@ -8,7 +8,7 @@ export const downloadReportAsImage = async (elementId, filename) => {
     // Try direct HTML download (most reliable)
     await downloadAsHTML(element, filename)
 
-  } catch (error) {
+  } catch {
     // Fallback to manual instructions
     showDownloadInstructions()
   }
@@ -27,11 +27,11 @@ const downloadAsHTML = async (element, filename) => {
             cssText += rule.cssText + '\n'
           })
         }
-      } catch (e) {
+      } catch {
         // Skip external stylesheets that can't be accessed
       }
     })
-  } catch (e) {
+  } catch {
     // Skip external stylesheets that can't be accessed
   }
 

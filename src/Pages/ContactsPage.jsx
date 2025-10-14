@@ -33,7 +33,7 @@ const ContactsPage = () => {
         contacts: contactsData,
         lastUpdated: serverTimestamp()
       })
-    } catch (error) {
+    } catch {
       // Silent error handling
     } finally {
       setSyncing(false)
@@ -54,7 +54,7 @@ const ContactsPage = () => {
       if (docSnap.exists() && docSnap.data().contacts) {
         setContacts(docSnap.data().contacts)
       }
-    } catch (error) {
+    } catch {
       toast.error('যোগাযোগ লোড করতে ব্যর্থ। দয়া করে পেজ রিফ্রেশ করুন।')
     } finally {
       setLoading(false)
