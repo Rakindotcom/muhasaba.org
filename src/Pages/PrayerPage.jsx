@@ -99,45 +99,71 @@ const PrayerPage = () => {
 
         try {
             const yesterday = getYesterdayDateString()
+
+            
             const yesterdayPrayerRef = doc(db, 'userPrayers', user.uid, 'dailyPrayers', yesterday)
             const yesterdayDoc = await getDoc(yesterdayPrayerRef)
 
-            if (yesterdayDoc.exists()) {
-                const yesterdayPrayers = yesterdayDoc.data().prayers
-                const missedPrayers = {}
 
-                // Find missed prayers from yesterday
-                if (yesterdayPrayers) {
-                    Object.entries(yesterdayPrayers).forEach(([prayerName, prayerStatus]) => {
-                        if (prayerStatus && typeof prayerStatus === 'object') {
-                            missedPrayers[prayerName] = !prayerStatus.prayed
-                        }
-                    })
-                }
-
-                // Check for completed qaza prayers and remove them from missed list
-                const qazaRef = doc(db, 'userQaza', user.uid, 'completedQaza', yesterday)
-                const qazaDoc = await getDoc(qazaRef)
-                
-                if (qazaDoc.exists() && qazaDoc.data().completedPrayers) {
-                    const completedPrayers = qazaDoc.data().completedPrayers
-                    Object.entries(completedPrayers).forEach(([prayerName, isCompleted]) => {
-                        if (!isCompleted) {
-                            // If prayer is marked as not completed (false), it means it was completed
-                            delete missedPrayers[prayerName]
-                        }
-                    })
-                }
-
-                return {
-                    prayers: missedPrayers,
-                    date: yesterday
-                }
+            
+            const missedPrayers = {
+                fajr: false,
+                dhuhr: false,
+                asr: false,
+                maghrib: false,
+                isha: false
             }
 
-            return { prayers: {}, date: null }
-        } catch {
-            return { prayers: {}, date: null }
+            if (yesterdayDoc.exists() && yesterdayDoc.data().prayers) {
+                const yesterdayPrayers = yesterdayDoc.data().prayers
+
+
+                // Find missed prayers from yesterday
+                Object.entries(yesterdayPrayers).forEach(([prayerName, prayerStatus]) => {
+                    if (prayerStatus && typeof prayerStatus === 'object') {
+                        // If prayer was not prayed, mark it as missed (true)
+                        missedPrayers[prayerName] = !prayerStatus.prayed
+                    }
+                })
+            } else {
+                // If no data exists for yesterday, assume all prayers were missed
+
+                Object.keys(missedPrayers).forEach(prayer => {
+                    missedPrayers[prayer] = true
+                })
+            }
+
+            // Check if yesterday's prayers were completed as qaza (stored in the same document)
+            if (yesterdayDoc.exists() && yesterdayDoc.data().qazaCompletions) {
+                const qazaCompletions = yesterdayDoc.data().qazaCompletions
+
+                
+                // Remove completed prayers from missed list
+                Object.entries(qazaCompletions).forEach(([prayerName, isCompleted]) => {
+                    if (isCompleted) {
+                        missedPrayers[prayerName] = false
+                    }
+                })
+            }
+
+
+            return {
+                prayers: missedPrayers,
+                date: yesterday
+            }
+        } catch (error) {
+
+            // Return default structure with all prayers missed if there's an error
+            return { 
+                prayers: {
+                    fajr: true,
+                    dhuhr: true,
+                    asr: true,
+                    maghrib: true,
+                    isha: true
+                }, 
+                date: getYesterdayDateString() 
+            }
         }
     }
 
@@ -313,20 +339,37 @@ const PrayerPage = () => {
             // Update local state immediately
             setQazaData(updatedQazaData)
 
-            // Save qaza completion to Firestore
+            // Save qaza completion directly to the daily prayer document
             try {
                 if (user?.uid && qazaData.date) {
-                    const qazaRef = doc(db, 'userQaza', user.uid, 'completedQaza', qazaData.date)
-                    await setDoc(qazaRef, {
-                        completedPrayers: {
-                            ...updatedQazaData.prayers
-                        },
-                        date: qazaData.date,
+                    const dailyPrayerRef = doc(db, 'userPrayers', user.uid, 'dailyPrayers', qazaData.date)
+                    
+                    // Get existing daily prayer document
+                    const existingDoc = await getDoc(dailyPrayerRef)
+                    const existingData = existingDoc.exists() ? existingDoc.data() : {}
+                    const existingQazaCompletions = existingData.qazaCompletions || {}
+                    
+                    // Add this prayer to completed qaza list
+                    const updatedQazaCompletions = {
+                        ...existingQazaCompletions,
+                        [prayer]: true
+                    }
+                    
+                    // Update the document with qaza completion info
+                    await setDoc(dailyPrayerRef, {
+                        ...existingData,
+                        qazaCompletions: updatedQazaCompletions,
                         lastUpdated: serverTimestamp()
                     })
+                    
+
                 }
-            } catch {
-                // Silent error handling
+            } catch (error) {
+
+                // If save fails, revert the local state
+                setQazaData(qazaData)
+                toast.error('কাজা নামাজ সেভ করতে সমস্যা হয়েছে')
+                return
             }
 
             // Show success message
@@ -445,7 +488,7 @@ const PrayerPage = () => {
                     {getTotalQaza() === 0 ? (
                         <div className="text-center py-6">
                             <Moon size={48} className="mx-auto mb-4 text-orange-400" />
-                            <p className="text-gray-600 text-lg">গতকালের কোন বাকি নামাজ নেই</p>
+                            <p className="text-gray-600 text-lg">কোন কাজা নামাজ নেই</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
